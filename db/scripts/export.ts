@@ -1,26 +1,17 @@
 #!/usr/bin/env bun
 /**
- * PostgreSQL database export utility with schema/data options
+ * Cloudflare D1 export utility with schema/data options.
  *
  * Usage:
  *   bun scripts/export.ts                    # Schema only (default)
  *   bun scripts/export.ts --data             # Schema + data
  *   bun scripts/export.ts --data-only        # Data only
  *   bun scripts/export.ts --table=users      # Specific table
- *   bun scripts/export.ts -- --inserts       # Pass pg_dump flags directly
+ *   bun scripts/export.ts -- --preview       # Pass Wrangler flags directly
  *
  * Environment:
  *   bun --env ENVIRONMENT=staging scripts/export.ts
- *   bun --env ENVIRONMENT=prod scripts/export.ts
- *
- * REQUIREMENTS:
- * - DATABASE_URL environment variable must be set and valid PostgreSQL connection string
- * - pg_dump binary must be available in PATH (PostgreSQL client tools required, validated at runtime)
- * - ./backups/ directory will be created automatically if it doesn't exist
- * - Output filenames include timestamp, environment, and export type for uniqueness
- * - Process exits with code 1 on any failure for CI/CD integration
- * - File permissions on output SQL files are restricted (readable by owner only)
- * - Script handles concurrent executions without filename conflicts
+ *   bun --env ENVIRONMENT=production scripts/export.ts
  */
 
 import { existsSync } from "node:fs";
@@ -28,21 +19,15 @@ import { chmod, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { $ } from "bun";
 
-// Import drizzle config to trigger environment loading and validation
-import "../drizzle.config";
-
 // Parse arguments
 const args = process.argv.slice(2);
 const passThrough: string[] = [];
 let includeData = false;
 let dataOnly = false;
 let table: string | undefined;
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  console.error("❌ DATABASE_URL is required.");
-  process.exit(1);
-}
+const environment = process.env.ENVIRONMENT ?? "development";
+const wranglerEnv = environment === "development" ? "dev" : environment;
+const isLocal = wranglerEnv === "dev";
 
 // Find pass-through arguments (after --)
 const dashIndex = args.indexOf("--");
@@ -62,34 +47,9 @@ for (const arg of args) {
   }
 }
 
-// Build pg_dump command
-const pgDumpArgs: string[] = [];
-
-// pg_dump requires the connection string as the last positional argument
-// or through -d/--dbname flag
-pgDumpArgs.push("--dbname", databaseUrl);
-
-// Default options
-pgDumpArgs.push("--format=plain", "--encoding=UTF-8");
-
-// Handle export type
-if (dataOnly) {
-  pgDumpArgs.push("--data-only");
-} else if (!includeData) {
-  pgDumpArgs.push("--schema-only");
-}
-
-// Handle table selection
-if (table) {
-  pgDumpArgs.push(`--table=${table}`);
-}
-
-// Add pass-through arguments
-pgDumpArgs.push(...passThrough);
-
 // Generate filename based on options with high precision timestamp
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-const envSuffix = process.env.ENVIRONMENT ? `-${process.env.ENVIRONMENT}` : "";
+const envSuffix = `-${wranglerEnv}`;
 const typeSuffix = dataOnly ? "-data" : includeData ? "-full" : "-schema";
 const tableSuffix = table ? `-${table}` : "";
 
@@ -105,24 +65,39 @@ const outputPath = resolve(
   `dump${envSuffix}${typeSuffix}${tableSuffix}-${timestamp}.sql`,
 );
 
-pgDumpArgs.push(`--file=${outputPath}`);
-
-// Check if pg_dump is available
-try {
-  await $`which pg_dump`.quiet();
-} catch {
-  console.error(
-    "❌ pg_dump not found. Please install PostgreSQL client tools.",
-  );
-  process.exit(1);
-}
-
 console.log("📤 Exporting database...");
 console.log(`📁 Output: ${outputPath}`);
 
 try {
-  // Execute pg_dump
-  await $`pg_dump ${pgDumpArgs}`;
+  const wranglerArgs = [
+    "wrangler",
+    "d1",
+    "export",
+    "APP_DB",
+    "--config",
+    "../apps/api/wrangler.jsonc",
+    isLocal ? "--local" : "--remote",
+    "--output",
+    outputPath,
+  ];
+
+  if (wranglerEnv !== "production") {
+    wranglerArgs.push("--env", wranglerEnv);
+  }
+
+  if (table) {
+    wranglerArgs.push("--table", table);
+  }
+
+  if (dataOnly) {
+    wranglerArgs.push("--no-schema");
+  } else if (!includeData) {
+    wranglerArgs.push("--no-data");
+  }
+
+  wranglerArgs.push(...passThrough);
+
+  await $`bunx ${wranglerArgs}`;
 
   // Set file permissions to owner-only readable (600)
   await chmod(outputPath, 0o600);

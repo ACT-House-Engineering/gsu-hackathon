@@ -1,21 +1,21 @@
 #!/usr/bin/env bun
-// Usage: bun scripts/seed.ts [--env ENVIRONMENT=staging|prod]
+// Usage: bun scripts/seed.ts
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { resolve } from "node:path";
+import { drizzle } from "drizzle-orm/d1";
+import { getPlatformProxy } from "wrangler";
 import * as schema from "../schema";
 import { seedUsers } from "../seeds/users";
 
-// Import drizzle config to trigger environment loading
-import "../drizzle.config";
+const environment = process.env.ENVIRONMENT === "preview" ? "preview" : "dev";
 
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error("Missing DATABASE_URL");
-}
+const platform = await getPlatformProxy<{ APP_DB: D1Database }>({
+  configPath: resolve(import.meta.dirname, "../../apps/api/wrangler.jsonc"),
+  environment,
+  persist: true,
+});
 
-const client = postgres(databaseUrl, { max: 1 });
-const db = drizzle(client, { schema, casing: "snake_case" });
+const db = drizzle(platform.env.APP_DB, { schema, casing: "snake_case" });
 
 console.log("🌱 Starting database seeding...");
 
@@ -26,6 +26,4 @@ try {
   console.error("❌ Database seeding failed:");
   console.error(error);
   process.exitCode = 1;
-} finally {
-  await client.end();
 }
