@@ -1,4 +1,4 @@
-import { Provider, createStore } from "jotai";
+import { createStore, Provider } from "jotai";
 import type { ReactNode } from "react";
 import { createElement } from "react";
 

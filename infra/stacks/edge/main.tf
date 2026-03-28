@@ -42,12 +42,13 @@ module "worker_web" {
   tags = [var.project_slug, var.environment]
 }
 
-module "hyperdrive" {
-  source = "../../modules/cloudflare/hyperdrive"
+module "d1" {
+  source = "../../modules/cloudflare/d1"
 
-  account_id   = var.cloudflare_account_id
-  name         = "${var.project_slug}-${var.environment}"
-  database_url = var.neon_database_url
+  account_id            = var.cloudflare_account_id
+  name                  = "${var.project_slug}${local.worker_suffix}"
+  jurisdiction          = var.d1_jurisdiction
+  primary_location_hint = var.d1_primary_location_hint
 }
 
 module "dns" {

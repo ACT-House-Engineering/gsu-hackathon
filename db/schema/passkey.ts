@@ -1,14 +1,7 @@
 // WebAuthn passkey credentials for Better Auth
 // @see https://www.better-auth.com/docs/plugins/passkey
 
-import {
-  boolean,
-  index,
-  integer,
-  pgTable,
-  text,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { generateAuthId } from "./id";
 import { user } from "./user";
 
@@ -20,31 +13,31 @@ import { user } from "./user";
  * - deviceName: User-friendly name (e.g., "MacBook Pro", "iPhone 15")
  * - platform: Authenticator platform ("platform" | "cross-platform")
  */
-export const passkey = pgTable(
+export const passkey = sqliteTable(
   "passkey",
   {
-    id: text()
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => generateAuthId("passkey")),
-    name: text(),
-    publicKey: text().notNull(),
-    userId: text()
+    name: text("name"),
+    publicKey: text("public_key").notNull(),
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    credentialID: text().notNull().unique(),
-    counter: integer().default(0).notNull(),
-    deviceType: text().notNull(),
-    backedUp: boolean().notNull(),
-    transports: text(),
-    aaguid: text(),
+    credentialID: text("credential_id").notNull().unique(),
+    counter: integer("counter").default(0).notNull(),
+    deviceType: text("device_type").notNull(),
+    backedUp: integer("backed_up", { mode: "boolean" }).notNull(),
+    transports: text("transports"),
+    aaguid: text("aaguid"),
     // Extended operational fields
-    lastUsedAt: timestamp({ withTimezone: true, mode: "date" }),
-    deviceName: text(),
-    platform: text(), // "platform" | "cross-platform"
-    createdAt: timestamp({ withTimezone: true, mode: "date" })
+    lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" }),
+    deviceName: text("device_name"),
+    platform: text("platform"), // "platform" | "cross-platform"
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: "date" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),

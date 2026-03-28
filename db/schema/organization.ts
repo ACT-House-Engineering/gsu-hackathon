@@ -1,7 +1,13 @@
 // Multi-tenant organizations and memberships with role-based access control
 
 import { relations } from "drizzle-orm";
-import { index, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 import { generateAuthId } from "./id";
 import { user } from "./user";
 
@@ -9,19 +15,19 @@ import { user } from "./user";
  * Organizations table for Better Auth organization plugin.
  * Each organization represents a separate tenant with isolated data.
  */
-export const organization = pgTable("organization", {
-  id: text()
+export const organization = sqliteTable("organization", {
+  id: text("id")
     .primaryKey()
     .$defaultFn(() => generateAuthId("organization")),
-  name: text().notNull(),
-  slug: text().notNull().unique(),
-  logo: text(),
-  metadata: text(), // Better Auth expects string (JSON serialized)
-  stripeCustomerId: text(),
-  createdAt: timestamp({ withTimezone: true, mode: "date" })
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  logo: text("logo"),
+  metadata: text("metadata"), // Better Auth expects string (JSON serialized)
+  stripeCustomerId: text("stripe_customer_id"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp({ withTimezone: true, mode: "date" })
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
@@ -41,23 +47,23 @@ export type NewOrganization = typeof organization.$inferInsert;
  *
  * @see apps/api/lib/auth.ts creatorRole config
  */
-export const member = pgTable(
+export const member = sqliteTable(
   "member",
   {
-    id: text()
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => generateAuthId("member")),
-    userId: text()
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    organizationId: text()
+    organizationId: text("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    role: text().notNull(), // "owner" | "admin" | "member"
-    createdAt: timestamp({ withTimezone: true, mode: "date" })
+    role: text("role").notNull(), // "owner" | "admin" | "member"
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: "date" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),

@@ -1,0 +1,11 @@
+{
+  "name": "@repo/static",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --env-file ../../.env.local",
+    "deploy": "wrangler deploy --env-file ../../.env.local",
+    "logs": "wrangler tail --env-file ../../.env.local"
+  }
+}

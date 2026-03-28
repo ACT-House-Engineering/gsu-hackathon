@@ -13,257 +13,145 @@ export const Route = createFileRoute("/(app)/about")({
   component: About,
 });
 
+const workshopMaterialsUrl = "https://link.act.house/bdx";
+const eventHubUrl =
+  "https://acthouse.notion.site/Build-Day-X-Innovation-Bootcamp-Georgia-State-University-3254a99790e080bd8281f7b14619a8eb";
+const announcementUrl = "https://www.instagram.com/p/DVcWCH9FGyn/";
+const launchUrl = "https://eni.gsu.edu/launchgsu/";
+
+const cards = [
+  {
+    title: "24-hour prototype sprint",
+    description:
+      "The public event framing is centered on getting from idea to working prototype quickly.",
+  },
+  {
+    title: "Agentic Engineering workshop",
+    description:
+      "The workshop materials move from prompts to datasets to code prototypes.",
+  },
+  {
+    title: "Mentors, judges, workshops",
+    description:
+      "The event hub and promo materials position support and feedback as part of the experience.",
+  },
+  {
+    title: "Interdisciplinary collaboration",
+    description:
+      "The public promo explicitly mentions architecture, design, technology, and creative disciplines.",
+  },
+];
+
 function About() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold tracking-tight mb-6">
-          About React Starter Kit
+    <div className="container mx-auto px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mb-16 text-center">
+        <h1 className="mb-6 text-4xl font-bold tracking-tight">
+          About the GSU Build Day Techie Workshop
         </h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          A production-ready, full-stack web application template that combines
-          modern development practices with cutting-edge technologies to deliver
-          exceptional performance and developer experience.
+        <p className="mx-auto max-w-3xl text-xl text-muted-foreground">
+          This app is the workshop companion for the public Agentic Engineering
+          materials used alongside Build Day X Innovation Bootcamp at Georgia
+          State University.
         </p>
       </div>
 
-      {/* Mission Section */}
       <section className="mb-20">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Our Mission</CardTitle>
+            <CardTitle className="text-2xl">What this workshop is</CardTitle>
             <CardDescription>
-              Empowering developers to build faster, better web applications
+              Verified from the public materials we could access
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              React Starter Kit was created to bridge the gap between prototype
-              and production. We believe that developers should focus on
-              building great features, not wrestling with configuration and
-              setup.
+              The ENIGSU announcement describes Build Day X as a fast-moving
+              innovation environment where students build at a professional
+              level and turn ideas into working prototypes in just 24 hours.
             </p>
             <p className="text-muted-foreground">
-              Our template provides a solid foundation with best practices,
-              modern tooling, and optimized performance out of the box, so you
-              can ship your ideas faster and with confidence.
+              The workshop materials focus on agentic engineering and use a
+              simple progression: prompts first, structured data next, then code
+              prototyping. The app and overview site in this repo now reflect
+              that framing directly.
             </p>
           </CardContent>
         </Card>
       </section>
 
-      {/* Key Features */}
       <section className="mb-20">
-        <h2 className="text-3xl font-bold tracking-tight mb-8 text-center">
-          What Makes Us Different
+        <h2 className="mb-8 text-center text-3xl font-bold tracking-tight">
+          Public event highlights
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>🎯 Production-Ready</CardTitle>
-              <CardDescription>
-                Not just a demo, but a real foundation for your applications
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Every component, pattern, and configuration has been
-                battle-tested in production environments. Security, performance,
-                and maintainability are built-in from day one.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>⚡ Edge-First Architecture</CardTitle>
-              <CardDescription>
-                Optimized for global performance at CDN edge locations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Built specifically for Cloudflare Workers and edge computing.
-                Your applications run closer to your users for lightning-fast
-                response times.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>🔧 Developer Experience</CardTitle>
-              <CardDescription>
-                Carefully crafted tooling for maximum productivity
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Hot reload, TypeScript support, comprehensive testing setup, and
-                intuitive project structure. Everything you need to stay in the
-                flow.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>🌐 Full-Stack Solution</CardTitle>
-              <CardDescription>
-                Complete backend and frontend in one cohesive package
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                tRPC for type-safe APIs, Better Auth for authentication and
-                database, and WebSocket support for real-time features.
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {cards.map((card) => (
+            <Card key={card.title}>
+              <CardHeader>
+                <CardTitle>{card.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {card.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
-      {/* Technology Choices */}
       <section className="mb-20">
-        <h2 className="text-3xl font-bold tracking-tight mb-8 text-center">
-          Technology Choices
-        </h2>
-
         <Card>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-semibold mb-4">Frontend Stack</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    <strong>React 19:</strong> Latest React with concurrent
-                    features
-                  </li>
-                  <li>
-                    <strong>TypeScript:</strong> Type safety and better
-                    developer experience
-                  </li>
-                  <li>
-                    <strong>Vite:</strong> Lightning-fast build tool and dev
-                    server
-                  </li>
-                  <li>
-                    <strong>TanStack Router:</strong> Type-safe routing with
-                    code splitting
-                  </li>
-                  <li>
-                    <strong>shadcn/ui:</strong> Beautiful, accessible component
-                    library
-                  </li>
-                  <li>
-                    <strong>Tailwind CSS:</strong> Utility-first CSS framework
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-4">Backend Stack</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    <strong>Bun:</strong> Fast JavaScript runtime and package
-                    manager
-                  </li>
-                  <li>
-                    <strong>Hono:</strong> Ultra-fast web framework for edge
-                    computing
-                  </li>
-                  <li>
-                    <strong>tRPC:</strong> End-to-end type safety for APIs
-                  </li>
-                  <li>
-                    <strong>Better Auth:</strong> Authentication
-                  </li>
-                  <li>
-                    <strong>Cloudflare Workers:</strong> Serverless edge
-                    computing
-                  </li>
-                  <li>
-                    <strong>WebSockets:</strong> Real-time communication support
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Team Section */}
-      <section className="mb-20">
-        <h2 className="text-3xl font-bold tracking-tight mb-8 text-center">
-          Built by Kriasoft
-        </h2>
-
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground mb-6">
-              React Starter Kit is maintained by Kriasoft, a team of experienced
-              developers passionate about modern web technologies and developer
-              experience.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild>
-                <a
-                  href="https://github.com/kriasoft"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visit Kriasoft on GitHub
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a
-                  href="https://kriasoft.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn More About Kriasoft
-                </a>
-              </Button>
-            </div>
+          <CardHeader>
+            <CardTitle className="text-2xl">Useful public links</CardTitle>
+            <CardDescription>
+              The same sources used to update this repo
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Button asChild>
+              <a
+                href={workshopMaterialsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Workshop Materials
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href={eventHubUrl} target="_blank" rel="noopener noreferrer">
+                Open Event Hub
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a
+                href={announcementUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View ENIGSU Announcement
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href={launchUrl} target="_blank" rel="noopener noreferrer">
+                Visit LaunchGSU
+              </a>
+            </Button>
           </CardContent>
         </Card>
       </section>
 
       <Separator className="my-12" />
 
-      {/* CTA Section */}
       <section className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight mb-4">
-          Ready to Get Started?
+        <h2 className="mb-4 text-3xl font-bold tracking-tight">
+          Continue through the workshop
         </h2>
-        <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-          Join thousands of developers who have chosen React Starter Kit for
-          their next project.
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
+          Use the overview site for the workshop flow and resource links, then
+          adapt the app itself for demos and hands-on exercises.
         </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" asChild>
-            <a
-              href="https://github.com/kriasoft/react-starter-kit"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Get Started Now
-            </a>
-          </Button>
-          <Button variant="outline" size="lg" asChild>
-            <a
-              href="https://github.com/kriasoft/react-starter-kit/discussions"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Join the Community
-            </a>
-          </Button>
-        </div>
       </section>
     </div>
   );

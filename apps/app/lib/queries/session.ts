@@ -5,14 +5,14 @@
  * TanStack Query handles caching, refresh, and consistency automatically.
  */
 
-import { getErrorStatus } from "@/lib/errors";
 import type { QueryClient } from "@tanstack/react-query";
 import {
   queryOptions,
   useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { type Session, type User, auth } from "../auth";
+import { getErrorStatus } from "@/lib/errors";
+import { auth, type Session, type User } from "../auth";
 
 // Both user and session must be present for valid auth state
 export interface SessionData {

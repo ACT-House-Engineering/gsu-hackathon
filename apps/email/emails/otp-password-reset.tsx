@@ -5,7 +5,7 @@ export default function OTPPasswordResetPreview() {
     <OTPEmail
       otp="456789"
       type="forget-password"
-      appName="React Starter Kit"
+      appName="GSU Build Day Techie Workshop"
       appUrl="https://example.com"
     />
   );

@@ -16,7 +16,9 @@ export const errorHandler: ErrorHandler = (err, c) => {
     // getResponse() is not context-aware; merge headers from middleware
     const res = err.getResponse();
     const headers = new Headers(res.headers);
-    c.res.headers.forEach((v, k) => headers.set(k, v));
+    c.res.headers.forEach((v, k) => {
+      headers.set(k, v);
+    });
     return new Response(res.body, {
       status: res.status,
       statusText: res.statusText,

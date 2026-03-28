@@ -6,83 +6,103 @@ outline: [2, 3]
 
 ## File Conventions
 
-The project uses [Vite's env file](https://vite.dev/guide/env-and-mode#env-files) convention:
+The repo follows [Vite env file](https://vite.dev/guide/env-and-mode#env-files) conventions for local development:
 
 | File                    | Committed | Purpose                                               |
 | ----------------------- | --------- | ----------------------------------------------------- |
-| `.env`                  | Yes       | Shared defaults (placeholder values, no real secrets) |
-| `.env.local`            | No        | Local overrides with real credentials                 |
-| `.env.staging.local`    | No        | Staging-specific overrides                            |
-| `.env.production.local` | No        | Production-specific overrides                         |
+| `.env`                  | Yes       | Shared defaults and placeholders                      |
+| `.env.local`            | No        | Local overrides with real secrets                     |
+| `.env.staging.local`    | No        | Staging-specific local overrides                      |
+| `.env.production.local` | No        | Production-specific local overrides                   |
 
-`.env.local` takes precedence over `.env`. Create it by copying `.env` and filling in real values:
+Create a local override file with:
 
 ```bash
 cp .env .env.local
 ```
 
 ::: warning
-Never put real secrets in `.env` – it's committed to git. Use `.env.local` for anything sensitive.
+Do not commit real secrets. Keep them in `.env.local` or in Cloudflare secrets.
 :::
 
-## Cloudflare Worker Bindings
+## Cloudflare Bindings
 
-In production, environment variables are set as Worker secrets or bindings – not from `.env` files. Configure them in the Cloudflare dashboard or via Wrangler:
+The API worker relies on file-based Cloudflare config instead of ad hoc dashboard setup:
+
+- Worker bindings and per-environment vars live in `apps/api/wrangler.jsonc`
+- Terraform-managed infra inputs live in `infra/envs/*/edge/terraform.tfvars`
+- D1 migrations live in `db/migrations/`
+
+The API worker expects these bindings at runtime:
+
+| Binding  | Type         | Purpose                     |
+| -------- | ------------ | --------------------------- |
+| `APP_DB` | `D1Database` | Primary application database |
+| `MAILER` | `SendEmail`  | Transactional email delivery |
+
+Cloudflare secrets are still required for sensitive values:
 
 ```bash
 wrangler secret put BETTER_AUTH_SECRET
+wrangler secret put GOOGLE_CLIENT_SECRET
+wrangler secret put OPENAI_API_KEY
 ```
-
-Database connections use [Hyperdrive](https://developers.cloudflare.com/hyperdrive/) bindings (`HYPERDRIVE_CACHED`, `HYPERDRIVE_DIRECT`) instead of raw connection strings. See [Deployment](/deployment/) for production setup.
-
-For local development, Wrangler reads Hyperdrive connection strings from the `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_*` variables in `.env` / `.env.local`.
 
 ## Variable Reference
 
 ### Application
 
-| Variable               | Required | Description                                     |
-| ---------------------- | -------- | ----------------------------------------------- |
-| `APP_NAME`             | Yes      | Display name used in emails and passkey prompts |
-| `APP_ORIGIN`           | Yes      | Full origin URL (e.g., `http://localhost:5173`) |
-| `API_ORIGIN`           | Yes      | API server URL (e.g., `http://localhost:8787`)  |
-| `ENVIRONMENT`          | Yes      | `development`, `staging`, or `production`       |
-| `GOOGLE_CLOUD_PROJECT` | Yes      | Google Cloud project ID (exposed to frontend)   |
+| Variable          | Required | Description                                     |
+| ----------------- | -------- | ----------------------------------------------- |
+| `APP_NAME`        | Yes      | Display name used in emails and auth prompts    |
+| `APP_ORIGIN`      | Yes      | Frontend origin (for example `http://localhost:5173`) |
+| `API_ORIGIN`      | Yes      | Local API origin used by the frontend dev server |
+| `ENVIRONMENT`     | Yes      | `development`, `preview`, `staging`, or `production` |
+| `ALLOWED_ORIGINS` | Yes      | Comma-separated origins accepted by the API     |
 
 ### Database
 
-| Variable                                                          | Required | Description                                |
-| ----------------------------------------------------------------- | -------- | ------------------------------------------ |
-| `DATABASE_URL`                                                    | Yes      | PostgreSQL connection string               |
-| `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_CACHED` | Dev only | Hyperdrive cached connection for local dev |
-| `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_DIRECT` | Dev only | Hyperdrive direct connection for local dev |
+There is no `DATABASE_URL` in the app runtime anymore. Database access is through the `APP_DB` D1 binding.
+
+| Variable      | Required | Description                                      |
+| ------------- | -------- | ------------------------------------------------ |
+| `ENVIRONMENT` | Yes      | Determines which Wrangler environment to emulate |
+
+Local migrations and seeding use Wrangler's D1 emulation:
+
+```bash
+bun db:migrate
+bun db:seed
+```
+
+Remote environments use the checked-in Wrangler config plus `--remote` in the workspace scripts.
 
 ### Authentication
 
 | Variable               | Required | Description                                                                           |
 | ---------------------- | -------- | ------------------------------------------------------------------------------------- |
-| `BETTER_AUTH_SECRET`   | Yes      | Secret for signing sessions and tokens. Generate with `bunx @better-auth/cli secret`  |
-| `GOOGLE_CLIENT_ID`     | Yes      | Google OAuth client ID ([console](https://console.cloud.google.com/apis/credentials)) |
+| `BETTER_AUTH_SECRET`   | Yes      | Secret for signing sessions and tokens                                                |
+| `GOOGLE_CLIENT_ID`     | Yes      | Google OAuth client ID                                                                |
 | `GOOGLE_CLIENT_SECRET` | Yes      | Google OAuth client secret                                                            |
-
-See [Authentication](/auth/) for provider setup details.
 
 ### AI
 
-| Variable         | Required | Description                                             |
-| ---------------- | -------- | ------------------------------------------------------- |
-| `OPENAI_API_KEY` | Yes      | [OpenAI](https://platform.openai.com/) API key (AI SDK) |
+| Variable         | Required | Description                   |
+| ---------------- | -------- | ----------------------------- |
+| `OPENAI_API_KEY` | Yes      | OpenAI API key for AI routes  |
 
 ### Email
 
-| Variable            | Required | Description                                             |
-| ------------------- | -------- | ------------------------------------------------------- |
-| `RESEND_API_KEY`    | Yes      | [Resend](https://resend.com) API key for sending emails |
-| `RESEND_EMAIL_FROM` | Yes      | Sender address (e.g., `Your App <noreply@example.com>`) |
+The worker sends mail through Cloudflare's `send_email` binding. Sender configuration is file-based in `apps/api/wrangler.jsonc`.
+
+| Variable         | Required | Description                                      |
+| ---------------- | -------- | ------------------------------------------------ |
+| `EMAIL_FROM`     | Yes      | Allowed sender address for the `MAILER` binding  |
+| `EMAIL_REPLY_TO` | No       | Reply-to address added to outgoing messages      |
 
 ### Billing (Optional)
 
-Stripe billing is optional – the app works without these variables, but billing endpoints return 404.
+Stripe billing is optional. The app works without these values, but billing endpoints return 404.
 
 | Variable                     | Required | Description                                |
 | ---------------------------- | -------- | ------------------------------------------ |
@@ -92,20 +112,10 @@ Stripe billing is optional – the app works without these variables, but billin
 | `STRIPE_PRO_PRICE_ID`        | No       | Stripe Price ID for the Pro plan (monthly) |
 | `STRIPE_PRO_ANNUAL_PRICE_ID` | No       | Stripe Price ID for the Pro plan (annual)  |
 
-See [Billing](/billing/) for Stripe configuration.
-
 ### Cloudflare
 
-| Variable                | Required    | Description                        |
-| ----------------------- | ----------- | ---------------------------------- |
-| `CLOUDFLARE_ACCOUNT_ID` | Deploy only | Cloudflare account ID              |
-| `CLOUDFLARE_ZONE_ID`    | Deploy only | DNS zone ID for custom domains     |
-| `CLOUDFLARE_API_TOKEN`  | Deploy only | API token for Wrangler deployments |
-
-### Analytics and Search
-
-| Variable                | Required | Description                       |
-| ----------------------- | -------- | --------------------------------- |
-| `GA_MEASUREMENT_ID`     | No       | Google Analytics 4 measurement ID |
-| `ALGOLIA_APP_ID`        | No       | Algolia application ID            |
-| `ALGOLIA_ADMIN_API_KEY` | No       | Algolia admin API key             |
+| Variable                | Required    | Description                    |
+| ----------------------- | ----------- | ------------------------------ |
+| `CLOUDFLARE_ACCOUNT_ID` | Deploy only | Cloudflare account ID          |
+| `CLOUDFLARE_ZONE_ID`    | Deploy only | DNS zone ID for custom domains |
+| `CLOUDFLARE_API_TOKEN`  | Deploy only | API token for Wrangler/Terraform |

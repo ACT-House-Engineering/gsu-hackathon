@@ -36,7 +36,7 @@ const colors = {
 export function BaseTemplate({
   preview,
   children,
-  appName = "React Starter Kit",
+  appName = "GSU Build Day Techie Workshop",
   appUrl = "https://example.com",
 }: BaseTemplateProps) {
   // Embedded SVG logo as data URI for better email compatibility

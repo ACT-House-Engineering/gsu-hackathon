@@ -3,12 +3,14 @@ import { useData } from "vitepress";
 import { computed, onMounted, ref, watch } from "vue";
 
 const props = defineProps<{ code: string }>();
+// biome-ignore lint/correctness/useHookAtTopLevel: Vue composables are valid at the top of <script setup>.
 const { isDark } = useData();
 const container = ref<HTMLElement | null>(null);
 const svg = ref("");
 
 const theme = computed(() => (isDark.value ? "dark" : "default"));
 
+// biome-ignore lint/correctness/noUnusedVariables: This computed value is consumed by the Vue template.
 const liveUrl = computed(() => {
   const state = JSON.stringify({
     code: props.code,

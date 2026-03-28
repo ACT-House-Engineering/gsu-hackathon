@@ -12,11 +12,17 @@
     "./hooks/*": "./hooks/*.ts",
     "./lib/*": "./lib/*.ts"
   },
-  "files": ["components", "hooks", "lib", "index.ts", "components.json"],
+  "files": [
+    "components",
+    "hooks",
+    "lib",
+    "index.ts",
+    "components.json"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "bunx @biomejs/biome check .",
+    "lint": "bunx @biomejs/biome lint .",
     "type-check": "tsc --noEmit",
     "add": "bun scripts/add.ts",
     "list": "bun scripts/list.ts",

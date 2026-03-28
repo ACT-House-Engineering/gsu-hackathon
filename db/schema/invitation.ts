@@ -1,7 +1,13 @@
 // Better Auth invitation system for organization invites
 
 import { relations } from "drizzle-orm";
-import { index, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 import { generateAuthId } from "./id";
 import { organization } from "./organization";
 import { user } from "./user";
@@ -14,28 +20,28 @@ import { user } from "./user";
  * - acceptedAt: When the invite was accepted
  * - rejectedAt: When the invite was rejected or canceled
  */
-export const invitation = pgTable(
+export const invitation = sqliteTable(
   "invitation",
   {
-    id: text()
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => generateAuthId("invitation")),
-    email: text().notNull(),
-    inviterId: text()
+    email: text("email").notNull(),
+    inviterId: text("inviter_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    organizationId: text()
+    organizationId: text("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    role: text().notNull(),
-    status: text().default("pending").notNull(),
-    expiresAt: timestamp({ withTimezone: true, mode: "date" }).notNull(),
-    acceptedAt: timestamp({ withTimezone: true, mode: "date" }),
-    rejectedAt: timestamp({ withTimezone: true, mode: "date" }),
-    createdAt: timestamp({ withTimezone: true, mode: "date" })
+    role: text("role").notNull(),
+    status: text("status").default("pending").notNull(),
+    expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+    acceptedAt: integer("accepted_at", { mode: "timestamp_ms" }),
+    rejectedAt: integer("rejected_at", { mode: "timestamp_ms" }),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: "date" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),

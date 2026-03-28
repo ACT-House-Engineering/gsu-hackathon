@@ -134,5 +134,6 @@
  * -------------------------------------------------------------------------- */
 
 .DocSearch {
+  /* biome-ignore lint/complexity/noImportantStyles: Algolia DocSearch needs this override to win against injected styles. */
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }

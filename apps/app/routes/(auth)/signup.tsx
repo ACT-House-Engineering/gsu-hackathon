@@ -1,6 +1,3 @@
-import { AuthForm } from "@/components/auth";
-import { getSafeRedirectUrl } from "@/lib/auth-config";
-import { revalidateSession, sessionQueryOptions } from "@/lib/queries/session";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
@@ -9,6 +6,9 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { z } from "zod";
+import { AuthForm } from "@/components/auth";
+import { getSafeRedirectUrl } from "@/lib/auth-config";
+import { revalidateSession, sessionQueryOptions } from "@/lib/queries/session";
 
 // Sanitize returnTo at parse time - consumers get a safe value or undefined
 const searchSchema = z.object({

@@ -1,7 +1,7 @@
-import { signOut, useSessionQuery } from "@/lib/queries/session";
 import { Avatar, AvatarFallback, Button } from "@repo/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, RefreshCw, User } from "lucide-react";
+import { signOut, useSessionQuery } from "@/lib/queries/session";
 
 /** Displays current authenticated user and sign-out control. */
 export function UserMenu() {

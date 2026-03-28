@@ -1,7 +1,7 @@
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AuthErrorBoundary } from "@/components/auth";
 import { Layout } from "@/components/layout";
 import { getCachedSession, sessionQueryOptions } from "@/lib/queries/session";
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(app)")({
   // Route-level authentication guard using cache-first strategy.

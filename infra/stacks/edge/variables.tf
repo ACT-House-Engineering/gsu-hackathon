@@ -25,8 +25,14 @@ variable "environment" {
   description = "Environment name (e.g., dev, staging, prod)"
 }
 
-variable "neon_database_url" {
+variable "d1_jurisdiction" {
   type        = string
-  description = "Neon PostgreSQL connection string"
-  sensitive   = true
+  description = "Optional D1 jurisdiction (for example: eu or fedramp)"
+  default     = ""
+}
+
+variable "d1_primary_location_hint" {
+  type        = string
+  description = "Preferred D1 primary location hint (for example: wnam, enam, weur)"
+  default     = "wnam"
 }

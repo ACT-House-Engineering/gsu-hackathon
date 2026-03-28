@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
 import type { FormEvent } from "react";
 import { useCallback, useRef, useState } from "react";
+import { auth } from "@/lib/auth";
 
 export type AuthStep = "method" | "email" | "otp";
 

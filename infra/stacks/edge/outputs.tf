@@ -14,15 +14,15 @@ output "worker_web_name" {
   description = "Web worker name for wrangler deploy"
 }
 
-# Hyperdrive ID for wrangler.jsonc
-output "hyperdrive_id" {
-  value       = module.hyperdrive.id
-  description = "Hyperdrive configuration ID for wrangler.jsonc"
+# D1 database metadata for wrangler.jsonc
+output "d1_database_id" {
+  value       = module.d1.id
+  description = "D1 database ID for wrangler.jsonc"
 }
 
-output "hyperdrive_name" {
-  value       = module.hyperdrive.name
-  description = "Hyperdrive configuration name"
+output "d1_database_name" {
+  value       = module.d1.name
+  description = "D1 database name"
 }
 
 output "hostname" {

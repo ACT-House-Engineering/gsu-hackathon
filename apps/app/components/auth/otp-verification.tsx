@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
 import { Button, Input } from "@repo/ui";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
+import { auth } from "@/lib/auth";
 
-const RESEND_COOLDOWN_SECONDS = 30;
+const OTP_COOLDOWN_SECONDS = 30;
 
 // Better Auth email-otp plugin error codes (matches server-side ERROR_CODES)
 const OTP_ERROR_CODES = {
@@ -41,7 +41,7 @@ export function OtpVerification({
     [onLoadingChange],
   );
 
-  // Countdown timer for resend cooldown
+  // Countdown timer for OTP resend cooldown
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
@@ -103,7 +103,7 @@ export function OtpVerification({
       if (result.error) {
         onError(result.error.message || "Failed to send OTP");
       } else {
-        setResendCooldown(RESEND_COOLDOWN_SECONDS);
+        setResendCooldown(OTP_COOLDOWN_SECONDS);
       }
     } catch (err) {
       console.error("Email OTP error:", err);

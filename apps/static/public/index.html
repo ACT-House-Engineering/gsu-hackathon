@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GSU Build Day Techie Workshop</title>
+    <meta
+      name="description"
+      content="Static placeholder page for the GSU Build Day Techie Workshop."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5efe4;
+        --panel: rgba(255, 252, 247, 0.84);
+        --line: rgba(45, 38, 28, 0.12);
+        --text: #1f1b17;
+        --muted: #6c6257;
+        --accent: #be5b2d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        font-family:
+          "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+          Georgia, serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(190, 91, 45, 0.16), transparent 34%),
+          linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
+      }
+
+      main {
+        width: min(640px, 100%);
+        padding: 48px 40px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: var(--panel);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 80px rgba(63, 43, 22, 0.12);
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(40px, 9vw, 72px);
+        line-height: 0.94;
+        letter-spacing: -0.05em;
+      }
+
+      p {
+        margin: 20px 0 0;
+        max-width: 38ch;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 28px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 14px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">ACT House Cloudflare</p>
+      <h1>GSU Build Day Techie Workshop</h1>
+      <p>
+        Static placeholder online. This keeps the workshop deployment path in
+        place while the richer experience continues to evolve.
+      </p>
+      <div class="pill">Workshop placeholder</div>
+    </main>
+  </body>
+</html>

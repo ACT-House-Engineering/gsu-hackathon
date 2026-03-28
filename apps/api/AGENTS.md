@@ -6,10 +6,8 @@
 
 ## Database
 
-- Two Hyperdrive connections: `db` (cached, for reads) and `dbDirect` (no cache, for writes and transactions).
-- `prepare: false` required for Cloudflare Workers — avoids statement caching issues with connection pooling.
-- `max: 1` connection per instance (Workers cold-start model).
-- `transform: { undefined: null }` converts JS `undefined` to SQL `NULL`.
+- `db` and `dbDirect` currently point at the same D1 binding to preserve the existing call sites.
+- D1 binding name is `APP_DB` and is configured in `wrangler.jsonc`.
 
 ## tRPC
 
@@ -19,7 +17,7 @@
 
 ## Email
 
-- Fresh `Resend` client per invocation via `createResendClient()`.
+- Uses the Cloudflare Workers `MAILER` binding via `send_email`.
 - Requires both HTML and plain text — use `renderEmailToHtml()` + `renderEmailToText()` from `@repo/email`.
 - Validates recipients with Zod before sending.
 

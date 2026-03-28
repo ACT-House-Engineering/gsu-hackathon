@@ -7,9 +7,16 @@ export interface Props {
   image?: string;
 }
 
+const workshopMaterialsUrl = "https://link.act.house/bdx";
+const eventHubUrl =
+  "https://acthouse.notion.site/Build-Day-X-Innovation-Bootcamp-Georgia-State-University-3254a99790e080bd8281f7b14619a8eb";
+const announcementUrl = "https://www.instagram.com/p/DVcWCH9FGyn/";
+const eniUrl = "https://eni.gsu.edu/";
+const launchUrl = "https://eni.gsu.edu/launchgsu/";
+
 const {
-  title = "React Starter Kit - Modern Full-Stack Web Application",
-  description = "Modern full-stack web application template optimized for serverless deployment to CDN edge locations. Built with React, TypeScript, and the latest web technologies.",
+  title = "GSU Build Day Techie Workshop",
+  description = "Agentic Engineering workshop companion site for Build Day X Innovation Bootcamp at Georgia State University.",
   image = "/og-image.png",
 } = Astro.props;
 ---
@@ -21,20 +28,18 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    
-    <!-- Primary Meta Tags -->
+
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
-    
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site ?? Astro.url)} />
+    <meta
+      property="og:url"
+      content={new URL(Astro.url.pathname, Astro.site ?? Astro.url)}
+    />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, Astro.site ?? Astro.url)} />
-
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -42,124 +47,163 @@ const {
   </head>
   <body>
     <div class="min-h-screen flex flex-col">
-      <!-- Header -->
       <header class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <a href="/" class="text-xl font-bold text-primary">
-                React Starter Kit
+          <div class="flex min-h-16 items-center justify-between gap-4 py-3">
+            <a href="/" class="min-w-0">
+              <span class="block text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+                Build Day X @ GSU
+              </span>
+              <span class="block truncate text-lg font-bold">
+                GSU Build Day Techie Workshop
+              </span>
+            </a>
+
+            <nav class="hidden items-center space-x-6 md:flex">
+              <a
+                href="/"
+                class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Overview
               </a>
-            </div>
-            <nav class="hidden md:flex items-center space-x-6">
-              <a href="/" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Home
+              <a
+                href="/features"
+                class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Workshop Flow
               </a>
-              <a href="/features" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Features
+              <a
+                href="/pricing"
+                class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Resources
               </a>
-              <a href="/pricing" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
-              </a>
-              <a href="/about" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="/about"
+                class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
                 About
               </a>
             </nav>
-            <div class="flex items-center space-x-2">
-              <a 
-                href="https://github.com/kriasoft/react-starter-kit" 
+
+            <div class="flex items-center gap-2">
+              <a
+                href={eventHubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
               >
-                GitHub
+                Event Hub
               </a>
-              <a 
-                href="https://github.com/kriasoft/react-starter-kit"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 px-3"
+              <a
+                href={workshopMaterialsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
               >
-                Get Started
+                Workshop Materials
               </a>
             </div>
           </div>
         </div>
       </header>
 
-      <!-- Main Content -->
       <main class="flex-1">
         <slot />
       </main>
 
-      <!-- Footer -->
       <footer class="border-t bg-background/95">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div class="space-y-3">
-              <h3 class="font-semibold">React Starter Kit</h3>
+              <h3 class="font-semibold">Workshop</h3>
               <p class="text-sm text-muted-foreground">
-                Modern full-stack web application template optimized for
-                serverless deployment.
+                Companion site for the Agentic Engineering session inside Build
+                Day X Innovation Bootcamp at Georgia State University.
               </p>
             </div>
+
             <div class="space-y-3">
-              <h4 class="font-medium">Resources</h4>
+              <h4 class="font-medium">Links</h4>
               <ul class="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a href="https://github.com/kriasoft/react-starter-kit#readme" class="hover:text-foreground transition-colors">
-                    Documentation
+                  <a
+                    href={workshopMaterialsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-foreground"
+                  >
+                    Workshop materials
                   </a>
                 </li>
                 <li>
-                  <a href="/features" class="hover:text-foreground transition-colors">
-                    Features
+                  <a
+                    href={eventHubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-foreground"
+                  >
+                    Build Day X event hub
                   </a>
                 </li>
                 <li>
-                  <a href="/pricing" class="hover:text-foreground transition-colors">
-                    Pricing
+                  <a href="/features" class="transition-colors hover:text-foreground">
+                    Workshop flow
                   </a>
                 </li>
               </ul>
             </div>
+
             <div class="space-y-3">
               <h4 class="font-medium">Community</h4>
               <ul class="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a href="https://github.com/kriasoft/react-starter-kit" class="hover:text-foreground transition-colors">
-                    GitHub
+                  <a
+                    href={announcementUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-foreground"
+                  >
+                    ENIGSU announcement
                   </a>
                 </li>
                 <li>
-                  <a href="https://discord.gg/kriasoft" class="hover:text-foreground transition-colors">
-                    Discord
+                  <a
+                    href={eniUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-foreground"
+                  >
+                    ENI at GSU
                   </a>
                 </li>
                 <li>
-                  <a href="https://twitter.com/kriasoft" class="hover:text-foreground transition-colors">
-                    Twitter
+                  <a
+                    href={launchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="transition-colors hover:text-foreground"
+                  >
+                    LaunchGSU
                   </a>
                 </li>
               </ul>
             </div>
+
             <div class="space-y-3">
-              <h4 class="font-medium">Legal</h4>
-              <ul class="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="https://github.com/kriasoft/react-starter-kit/blob/main/LICENSE" class="hover:text-foreground transition-colors">
-                    License
-                  </a>
-                </li>
-              </ul>
+              <h4 class="font-medium">Context</h4>
+              <p class="text-sm text-muted-foreground">
+                Public event materials describe a 24-hour prototype sprint with
+                mentorship, workshops, interdisciplinary teams, and up to
+                $2,500 in prizes.
+              </p>
             </div>
           </div>
-          <div class="border-t mt-6 pt-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center">
-              <p class="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Kriasoft. All rights reserved.
-              </p>
-              <p class="text-sm text-muted-foreground">
-                Built with Astro, React, TypeScript, and Tailwind CSS
-              </p>
+
+          <div class="mt-6 border-t pt-6">
+            <div class="flex flex-col items-start justify-between gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center">
+              <p>Build Day X x Georgia State University x ACT House</p>
+              <p>Agentic Engineering workshop companion app and resource hub</p>
             </div>
           </div>
         </div>

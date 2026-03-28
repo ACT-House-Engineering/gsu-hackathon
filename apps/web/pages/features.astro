@@ -1,5 +1,4 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   Card,
   CardContent,
@@ -7,281 +6,148 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const title = "Features - React Starter Kit";
+const title = "Workshop Flow - GSU Build Day Techie Workshop";
 const description =
-  "Explore all the powerful features that make React Starter Kit the perfect foundation for your next project.";
+  "How the public Agentic Engineering workshop progresses from prompting to datasets to code prototypes.";
 
-const featureCategories = [
+const stages = [
   {
-    title: "Developer Experience",
-    icon: "🛠️",
-    features: [
-      {
-        title: "TypeScript First",
-        description:
-          "Full TypeScript support with strict type checking and IntelliSense",
-      },
-      {
-        title: "Hot Module Replacement",
-        description:
-          "Instant feedback with fast refresh and state preservation",
-      },
-      {
-        title: "Monorepo Structure",
-        description: "Organized workspace management with Bun workspaces",
-      },
-      {
-        title: "Code Generation",
-        description: "Automated route generation and type inference",
-      },
+    title: "Who are Techies?",
+    icon: "🙋🏽",
+    points: [
+      "The workshop opens with a show of hands around common tools already in use.",
+      "The public slides explicitly reference ChatGPT, Claude, Lovable, v0, Claude Code, Codex, and CLI-based agent tooling.",
+      "That framing makes the session practical immediately instead of theoretical.",
     ],
   },
   {
-    title: "Performance",
-    icon: "⚡",
-    features: [
-      {
-        title: "Edge Rendering",
-        description: "Server-side rendering at CDN edge locations worldwide",
-      },
-      {
-        title: "Code Splitting",
-        description: "Automatic route-based code splitting for optimal loading",
-      },
-      {
-        title: "Asset Optimization",
-        description: "Image optimization, lazy loading, and efficient bundling",
-      },
-      {
-        title: "Zero-Config CDN",
-        description: "Built-in CDN support with Cloudflare Workers",
-      },
+    title: "Stage 1: Simple Prompt",
+    icon: "🗣️",
+    points: [
+      "The first exercise starts simple: assign a role and give the model a clear job.",
+      "The public materials use an automobile mechanic prompt to show how far a better framing can take a basic request.",
+      "This stage is about clear intent, role assignment, and prompt sharing.",
     ],
   },
   {
-    title: "Full-Stack Capabilities",
+    title: "Stage 2: Talking to a Dataset",
+    icon: "🗂️",
+    points: [
+      "The second exercise moves beyond plain chat into structured context.",
+      "The workshop example asks the model to use Google Takeout JSON data and recommend restaurants in Atlanta with explanations.",
+      "This stage demonstrates that good AI work often starts with better context, not a fancier model.",
+    ],
+  },
+  {
+    title: "Stage 3: Prototyping Code",
+    icon: "🧪",
+    points: [
+      "The third stage turns intent into implementation.",
+      "The public example asks for a linted Python CLI shoe customizer with three interactive options.",
+      "The workshop materials also link to public Replit and Gemini examples so participants can see the idea become runnable code.",
+    ],
+  },
+  {
+    title: "Build Day Context",
     icon: "🚀",
-    features: [
-      {
-        title: "Type-Safe APIs",
-        description: "End-to-end type safety with tRPC",
-      },
-      {
-        title: "Authentication",
-        description: "Built-in auth with Better Auth and session management",
-      },
-      {
-        title: "Database Integration",
-        description: "PostgreSQL with Drizzle ORM and migrations",
-      },
-      {
-        title: "Real-time Support",
-        description: "WebSocket integration for live features",
-      },
+    points: [
+      "The workshop sits inside a 24-hour prototype sprint rather than a classroom-only setting.",
+      "The event materials emphasize mentorship, judging, collaborative teams, and final pitches.",
+      "That pressure changes the goal: make progress fast, communicate clearly, and ship something real.",
     ],
   },
-  {
-    title: "UI & Design",
-    icon: "🎨",
-    features: [
-      {
-        title: "Component Library",
-        description: "Pre-built components with ShadCN UI",
-      },
-      {
-        title: "Tailwind CSS v4",
-        description: "Latest Tailwind with automatic class sorting",
-      },
-      {
-        title: "Dark Mode",
-        description: "Built-in theme support with system preference detection",
-      },
-      {
-        title: "Responsive Design",
-        description: "Mobile-first approach with adaptive layouts",
-      },
-    ],
-  },
-  {
-    title: "Testing & Quality",
-    icon: "✅",
-    features: [
-      {
-        title: "Unit Testing",
-        description: "Vitest setup with coverage reporting",
-      },
-      {
-        title: "E2E Testing",
-        description: "Playwright integration for browser testing",
-      },
-      {
-        title: "Type Checking",
-        description: "Strict TypeScript configuration",
-      },
-      {
-        title: "Linting & Formatting",
-        description: "ESLint and Prettier pre-configured",
-      },
-    ],
-  },
-  {
-    title: "Deployment & DevOps",
-    icon: "☁️",
-    features: [
-      {
-        title: "CI/CD Pipeline",
-        description: "GitHub Actions workflow included",
-      },
-      {
-        title: "Infrastructure as Code",
-        description: "Terraform configuration for Cloudflare",
-      },
-      {
-        title: "Environment Management",
-        description: "Multi-environment support with .env files",
-      },
-      {
-        title: "Monitoring",
-        description: "Built-in error tracking and analytics",
-      },
-    ],
-  },
+];
+
+const tools = [
+  { name: "ChatGPT", category: "Models" },
+  { name: "Claude", category: "Models" },
+  { name: "Codex", category: "Agentic coding" },
+  { name: "Claude Code", category: "Agentic coding" },
+  { name: "Google Takeout JSON", category: "Data context" },
+  { name: "Replit", category: "Prototype runtime" },
+  { name: "Gemini", category: "Example chat" },
+  { name: "Cloudflare Workers", category: "Runtime" },
+  { name: "Cloudflare D1", category: "Database" },
+  { name: "React", category: "Frontend" },
+  { name: "Bun", category: "Runtime" },
+  { name: "TypeScript", category: "Language" },
 ];
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <!-- Hero Section -->
-    <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold tracking-tight mb-6">
-        Powerful Features for Modern Development
+  <div class="container mx-auto px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mb-16 text-center">
+      <h1 class="mb-6 text-4xl font-bold tracking-tight">
+        Workshop flow
       </h1>
-      <p class="text-xl text-muted-foreground max-w-3xl mx-auto">
-        Everything you need to build, test, and deploy production-ready web applications
-        with confidence and speed.
+      <p class="mx-auto max-w-3xl text-xl text-muted-foreground">
+        The public Agentic Engineering materials follow a simple arc: start
+        with prompts, add richer context through data, then turn the result
+        into a working prototype quickly enough to matter in a Build Day
+        environment.
       </p>
     </div>
 
-    <!-- Feature Categories -->
-    {featureCategories.map((category) => (
+    {stages.map((stage) => (
       <section class="mb-20">
-        <div class="flex items-center mb-8">
-          <span class="text-4xl mr-4">{category.icon}</span>
-          <h2 class="text-3xl font-bold tracking-tight">{category.title}</h2>
+        <div class="mb-8 flex items-center">
+          <span class="mr-4 text-4xl">{stage.icon}</span>
+          <h2 class="text-3xl font-bold tracking-tight">{stage.title}</h2>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {category.features.map((feature) => (
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {stage.points.map((point) => (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardHeader>
+              <CardContent className="pt-6">
+                <p class="text-sm text-muted-foreground">{point}</p>
+              </CardContent>
             </Card>
           ))}
         </div>
       </section>
     ))}
 
-    <!-- Tech Stack Detail -->
-    <section class="mb-20 bg-muted/20 rounded-lg p-12">
-      <h2 class="text-3xl font-bold tracking-tight mb-8 text-center">
-        Built with Best-in-Class Technologies
+    <section class="mb-20 rounded-lg bg-muted/20 p-12">
+      <h2 class="mb-8 text-center text-3xl font-bold tracking-tight">
+        Example workshop prompts
       </h2>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {[
-          { name: "React 19", category: "UI Framework" },
-          { name: "TypeScript 5.9", category: "Language" },
-          { name: "Astro", category: "Static Site Gen" },
-          { name: "Bun", category: "Runtime" },
-          { name: "Vite", category: "Build Tool" },
-          { name: "TanStack Router", category: "Routing" },
-          { name: "tRPC", category: "API Layer" },
-          { name: "Hono", category: "Web Framework" },
-          { name: "ShadCN UI", category: "Components" },
-          { name: "Tailwind CSS", category: "Styling" },
-          { name: "Drizzle ORM", category: "Database" },
-          { name: "PostgreSQL", category: "Database" },
-          { name: "Better Auth", category: "Authentication" },
-          { name: "Cloudflare", category: "Platform" },
-          { name: "Vitest", category: "Testing" },
-          { name: "Terraform", category: "Infrastructure" }
-        ].map((tech) => (
-          <div class="bg-background rounded-lg p-4 border">
-            <div class="font-semibold">{tech.name}</div>
-            <div class="text-xs text-muted-foreground">{tech.category}</div>
-          </div>
-        ))}
-      </div>
-    </section>
 
-    <!-- Code Example -->
-    <section class="mb-20">
-      <h2 class="text-3xl font-bold tracking-tight mb-8 text-center">
-        Clean, Modern Code
-      </h2>
-      
       <Card>
         <CardHeader>
-          <CardTitle>Example: Type-Safe API Route</CardTitle>
+          <CardTitle>From prompt to prototype</CardTitle>
           <CardDescription>
-            Define your API with full type safety from backend to frontend
+            Condensed from the public workshop materials
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <pre class="bg-muted p-4 rounded-lg overflow-x-auto">
-            <code class="text-sm">{`// api/router.ts
-export const appRouter = router({
-  user: {
-    get: publicProcedure
-      .input(z.object({ id: z.string() }))
-      .query(async ({ input }) => {
-        return await db.user.findUnique({
-          where: { id: input.id }
-        });
-      }),
-  },
-});
+          <pre class="overflow-x-auto rounded-lg bg-muted p-4">
+            <code class="text-sm">{`1. ACT as an Automobile Mechanic
 
-// app/page.tsx
-function UserProfile({ userId }: Props) {
-  const { data } = trpc.user.get.useQuery({ id: userId });
-  
-  return <div>{data?.name}</div>;
-}`}</code>
+2. Use this Google Takeout List JSON data of the places I like and give me
+   recommendations for restaurants I would like in Atlanta with reasons why I
+   would like each recommendation.
+
+3. Write a linted Python script for a CLI tool that asks users to
+   interactively customize their shoes with 3 options.`}</code>
           </pre>
         </CardContent>
       </Card>
     </section>
 
-    <!-- CTA Section -->
-    <section class="text-center">
-      <h2 class="text-3xl font-bold tracking-tight mb-4">
-        Experience the Difference
+    <section class="mb-20 rounded-lg bg-muted/20 p-12">
+      <h2 class="mb-8 text-center text-3xl font-bold tracking-tight">
+        Tools and stack around the workshop
       </h2>
-      <p class="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-        See why developers choose React Starter Kit for their most important projects.
-      </p>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a 
-          href="https://github.com/kriasoft/react-starter-kit"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          Try It Now
-        </a>
-        <a 
-          href="https://github.com/kriasoft/react-starter-kit#readme"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-        >
-          View Documentation
-        </a>
+      <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+        {tools.map((tool) => (
+          <div class="rounded-lg border bg-background p-4">
+            <div class="font-semibold">{tool.name}</div>
+            <div class="text-xs text-muted-foreground">{tool.category}</div>
+          </div>
+        ))}
       </div>
     </section>
   </div>

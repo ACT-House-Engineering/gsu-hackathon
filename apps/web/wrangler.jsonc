@@ -3,7 +3,7 @@
 
   // [METADATA]
   // Edge router that receives all traffic and routes to api/app via service bindings.
-  "name": "gsu-hackathon-web",
+  "name": "gsu-build-day-techie-workshop-web",
   "main": "./worker.ts",
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [],
@@ -24,8 +24,14 @@
   // NOTE: services is non-inheritable — must be specified per environment.
   // Use naming convention: <worker>-<env> (e.g., example-app-staging)
   "services": [
-    { "binding": "APP_SERVICE", "service": "gsu-hackathon-app" },
-    { "binding": "API_SERVICE", "service": "gsu-hackathon-api" }
+    {
+      "binding": "APP_SERVICE",
+      "service": "gsu-build-day-techie-workshop-app"
+    },
+    {
+      "binding": "API_SERVICE",
+      "service": "gsu-build-day-techie-workshop-api"
+    }
   ],
 
   // [ENV:PRODUCTION]
@@ -49,8 +55,14 @@
     // Command: bun wrangler deploy --env staging
     "staging": {
       "services": [
-        { "binding": "APP_SERVICE", "service": "gsu-hackathon-app-staging" },
-        { "binding": "API_SERVICE", "service": "gsu-hackathon-api-staging" }
+        {
+          "binding": "APP_SERVICE",
+          "service": "gsu-build-day-techie-workshop-app-staging"
+        },
+        {
+          "binding": "API_SERVICE",
+          "service": "gsu-build-day-techie-workshop-api-staging"
+        }
       ],
       "vars": {
         "ENVIRONMENT": "staging"
@@ -65,8 +77,14 @@
     // Command: bun wrangler deploy --env preview
     "preview": {
       "services": [
-        { "binding": "APP_SERVICE", "service": "gsu-hackathon-app-preview" },
-        { "binding": "API_SERVICE", "service": "gsu-hackathon-api-preview" }
+        {
+          "binding": "APP_SERVICE",
+          "service": "gsu-build-day-techie-workshop-app-preview"
+        },
+        {
+          "binding": "API_SERVICE",
+          "service": "gsu-build-day-techie-workshop-api-preview"
+        }
       ],
       "vars": {
         "ENVIRONMENT": "preview"

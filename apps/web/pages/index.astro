@@ -1,5 +1,4 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   Button,
   Card,
@@ -8,119 +7,125 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const features = [
+const workshopMaterialsUrl = "https://link.act.house/bdx";
+const eventHubUrl =
+  "https://acthouse.notion.site/Build-Day-X-Innovation-Bootcamp-Georgia-State-University-3254a99790e080bd8281f7b14619a8eb";
+const announcementUrl = "https://www.instagram.com/p/DVcWCH9FGyn/";
+
+const highlights = [
   {
-    title: "⚡ Lightning Fast",
-    description: "SSR at CDN edge locations with ~100 Lighthouse scores",
+    title: "⏱️ 24-Hour Build Pressure",
+    description: "The public event framing is a fast prototype sprint",
     content:
-      "Optimized for Cloudflare Workers with Bun runtime for maximum performance.",
+      "Build Day X is described as a 24-hour innovation environment focused on getting from idea to working prototype quickly.",
   },
   {
-    title: "🎨 Modern UI",
-    description: "Beautiful components with ShadCN UI and Tailwind CSS",
+    title: "🤖 Agentic Engineering",
+    description: "This repo supports the Techie Workshop materials",
     content:
-      "Pre-built components following modern design principles and accessibility standards.",
+      "The workshop content moves from simple prompting to dataset reasoning to code prototyping using agentic tools and workflows.",
   },
   {
-    title: "🚀 Developer Experience",
-    description: "TypeScript, hot reload, and excellent tooling",
+    title: "🧑‍🏫 Mentors, Judges, Workshops",
+    description: "Support is part of the event promise",
     content:
-      "Full TypeScript support with Vite, TanStack Router, and modern development tools.",
+      "The public materials call out mentorship, workshops, judging, and facilitator support as part of the bootcamp experience.",
   },
   {
-    title: "📱 Full-Stack",
-    description: "tRPC API with PostgreSQL and authentication",
+    title: "🫱🏽‍🫲🏼 Interdisciplinary Teams",
+    description: "Not just engineering-only collaboration",
     content:
-      "Complete backend solution with type-safe APIs and database integration.",
+      "The announcement explicitly mentions collaborative teams spanning architecture, design, technology, and creative disciplines.",
   },
   {
-    title: "🔧 Configurable",
-    description: "Monorepo structure with workspace management",
+    title: "🏆 Real Stakes",
+    description: "Build Day X is positioned as a serious student challenge",
     content:
-      "Organized codebase with separate app, API, edge, and database workspaces.",
+      "The ENIGSU promo advertises up to $2,500 in prizes and frames the event as a place to build at a professional level.",
   },
   {
-    title: "☁️ Serverless Ready",
-    description: "Deploy to edge locations worldwide",
+    title: "🎯 Practical Workshop Output",
+    description: "Prompts, datasets, prototypes, and implementation",
     content:
-      "Built for Cloudflare Workers with global distribution and automatic scaling.",
+      "The workshop examples include prompt engineering, working with exported user data, and generating runnable prototype code.",
   },
 ];
 
-const technologies = [
-  "React 19",
-  "TypeScript",
-  "Astro",
-  "TanStack Router",
-  "ShadCN UI",
-  "Tailwind CSS",
+const tools = [
+  "ChatGPT",
+  "Claude",
+  "Codex",
+  "Claude Code",
+  "Google Takeout JSON",
+  "Replit",
+  "Gemini",
+  "Cloudflare Workers",
+  "Cloudflare D1",
+  "React",
   "Bun",
-  "Hono",
-  "tRPC",
-  "PostgreSQL",
-  "Cloudflare",
-  "Jotai",
+  "TypeScript",
 ];
 ---
 
 <BaseLayout>
-  <!-- Hero Section -->
-  <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/20">
+  <section class="bg-gradient-to-b from-background to-muted/20 px-4 py-20 sm:px-6 lg:px-8">
     <div class="container mx-auto text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-        React Starter Kit
-      </h1>
-      <p class="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-        Modern full-stack web application template optimized for serverless
-        deployment to CDN edge locations. Built with React, TypeScript, and
-        the latest web technologies.
+      <p class="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-primary">
+        Build Day X Innovation Bootcamp
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <h1 class="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+        GSU Build Day Techie Workshop
+      </h1>
+      <p class="mx-auto mb-8 max-w-3xl text-xl text-muted-foreground">
+        This companion site supports the Agentic Engineering workshop at
+        Georgia State University: a hands-on session that moves from simple
+        prompting to dataset reasoning to code prototyping inside a 24-hour
+        build environment.
+      </p>
+      <div class="flex flex-col justify-center gap-4 sm:flex-row">
         <Button size="lg" asChild>
-          <a
-            href="https://github.com/kriasoft/react-starter-kit"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Get Started
+          <a href={workshopMaterialsUrl} target="_blank" rel="noopener noreferrer">
+            Open Workshop Materials
           </a>
         </Button>
         <Button variant="outline" size="lg" asChild>
-          <a
-            href="https://github.com/kriasoft/react-starter-kit"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View on GitHub
+          <a href={eventHubUrl} target="_blank" rel="noopener noreferrer">
+            View Event Hub
+          </a>
+        </Button>
+        <Button variant="outline" size="lg" asChild>
+          <a href={announcementUrl} target="_blank" rel="noopener noreferrer">
+            Read ENIGSU Announcement
           </a>
         </Button>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section class="py-20 px-4 sm:px-6 lg:px-8">
+  <section class="px-4 py-20 sm:px-6 lg:px-8">
     <div class="container mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold tracking-tight mb-4">
-          Everything you need to build modern web apps
+      <div class="mb-16 text-center">
+        <h2 class="mb-4 text-3xl font-bold tracking-tight">
+          What the public event materials promise
         </h2>
-        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
-          React Starter Kit provides a solid foundation with best practices,
-          modern tooling, and optimized performance out of the box.
+        <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
+          The current public sources frame Build Day X as a high-intensity,
+          mentor-supported prototype sprint and the Techie Workshop as a
+          practical introduction to agentic engineering.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map((feature) => (
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {highlights.map((highlight) => (
           <Card>
             <CardHeader>
-              <CardTitle>{feature.title}</CardTitle>
-              <CardDescription>{feature.description}</CardDescription>
+              <CardTitle>{highlight.title}</CardTitle>
+              <CardDescription>{highlight.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p class="text-sm text-muted-foreground">{feature.content}</p>
+              <p class="text-sm text-muted-foreground">{highlight.content}</p>
             </CardContent>
           </Card>
         ))}
@@ -128,55 +133,43 @@ const technologies = [
     </div>
   </section>
 
-  <!-- Tech Stack Section -->
-  <section class="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
+  <section class="bg-muted/20 px-4 py-20 sm:px-6 lg:px-8">
     <div class="container mx-auto text-center">
-      <h2 class="text-3xl font-bold tracking-tight mb-4">
-        Built with Modern Technologies
+      <h2 class="mb-4 text-3xl font-bold tracking-tight">
+        Tools referenced in the workshop
       </h2>
-      <p class="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
-        Carefully selected technologies that work together seamlessly
+      <p class="mx-auto mb-12 max-w-2xl text-lg text-muted-foreground">
+        The workshop materials explicitly reference mainstream model products,
+        agentic coding tools, data exports, and prototype environments.
       </p>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
-        {technologies.map((tech) => (
-          <div class="p-4 rounded-lg bg-background border">
-            <span class="font-medium">{tech}</span>
+      <div class="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6">
+        {tools.map((tool) => (
+          <div class="rounded-lg border bg-background p-4">
+            <span class="font-medium">{tool}</span>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="py-20 px-4 sm:px-6 lg:px-8">
+  <section class="px-4 py-20 sm:px-6 lg:px-8">
     <div class="container mx-auto text-center">
-      <h2 class="text-3xl font-bold tracking-tight mb-4">
-        Ready to start building?
+      <h2 class="mb-4 text-3xl font-bold tracking-tight">
+        Explore the workshop flow
       </h2>
-      <p class="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-        Get started with React Starter Kit today and build your next project
-        with confidence.
+      <p class="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
+        See how the session progresses from role-based prompting to dataset work
+        to prototype generation, then jump into the resource hub for the public
+        links that anchor this repo.
       </p>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <div class="flex flex-col justify-center gap-4 sm:flex-row">
         <Button size="lg" asChild>
-          <a
-            href="https://github.com/kriasoft/react-starter-kit"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Clone Repository
-          </a>
+          <a href="/features">See Workshop Flow</a>
         </Button>
         <Button variant="outline" size="lg" asChild>
-          <a
-            href="https://github.com/kriasoft/react-starter-kit#readme"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read Documentation
-          </a>
+          <a href="/pricing">Open Resources</a>
         </Button>
       </div>
     </div>

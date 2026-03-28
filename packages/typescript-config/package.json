@@ -13,5 +13,8 @@
     "./react.jsonc": "./react.jsonc",
     "./package.json": "./package.json"
   },
-  "files": ["*.jsonc", "package.json"]
+  "files": [
+    "*.jsonc",
+    "package.json"
+  ]
 }

@@ -2,42 +2,37 @@
 // referenceId is polymorphic: points to user.id or organization.id depending
 // on whether the subscription is personal or org-level billing.
 
-import {
-  boolean,
-  index,
-  integer,
-  pgTable,
-  text,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { generateAuthId } from "./id";
 
-export const subscription = pgTable(
+export const subscription = sqliteTable(
   "subscription",
   {
-    id: text()
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => generateAuthId("subscription")),
-    plan: text().notNull(),
-    referenceId: text().notNull(),
-    stripeCustomerId: text(),
-    stripeSubscriptionId: text().unique(),
-    status: text().default("incomplete").notNull(),
-    periodStart: timestamp({ withTimezone: true, mode: "date" }),
-    periodEnd: timestamp({ withTimezone: true, mode: "date" }),
-    trialStart: timestamp({ withTimezone: true, mode: "date" }),
-    trialEnd: timestamp({ withTimezone: true, mode: "date" }),
-    cancelAtPeriodEnd: boolean().default(false),
-    cancelAt: timestamp({ withTimezone: true, mode: "date" }),
-    canceledAt: timestamp({ withTimezone: true, mode: "date" }),
-    endedAt: timestamp({ withTimezone: true, mode: "date" }),
-    seats: integer(),
-    billingInterval: text(),
-    groupId: text(),
-    createdAt: timestamp({ withTimezone: true, mode: "date" })
+    plan: text("plan").notNull(),
+    referenceId: text("reference_id").notNull(),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id").unique(),
+    status: text("status").default("incomplete").notNull(),
+    periodStart: integer("period_start", { mode: "timestamp_ms" }),
+    periodEnd: integer("period_end", { mode: "timestamp_ms" }),
+    trialStart: integer("trial_start", { mode: "timestamp_ms" }),
+    trialEnd: integer("trial_end", { mode: "timestamp_ms" }),
+    cancelAtPeriodEnd: integer("cancel_at_period_end", {
+      mode: "boolean",
+    }).default(false),
+    cancelAt: integer("cancel_at", { mode: "timestamp_ms" }),
+    canceledAt: integer("canceled_at", { mode: "timestamp_ms" }),
+    endedAt: integer("ended_at", { mode: "timestamp_ms" }),
+    seats: integer("seats"),
+    billingInterval: text("billing_interval"),
+    groupId: text("group_id"),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: "date" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),

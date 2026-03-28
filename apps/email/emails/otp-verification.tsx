@@ -5,7 +5,7 @@ export default function OTPVerificationPreview() {
     <OTPEmail
       otp="789012"
       type="email-verification"
-      appName="React Starter Kit"
+      appName="GSU Build Day Techie Workshop"
       appUrl="https://example.com"
     />
   );

@@ -8,6 +8,6 @@ export function createStripeClient(env: Pick<Env, "STRIPE_SECRET_KEY">) {
   }
 
   return new Stripe(env.STRIPE_SECRET_KEY, {
-    appInfo: { name: "React Starter Kit" },
+    appInfo: { name: "GSU Build Day Techie Workshop" },
   });
 }

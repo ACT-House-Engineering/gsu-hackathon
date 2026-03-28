@@ -25,7 +25,12 @@ variable "environment" {
   type = string
 }
 
-variable "neon_database_url" {
-  type      = string
-  sensitive = true
+variable "d1_jurisdiction" {
+  type    = string
+  default = ""
+}
+
+variable "d1_primary_location_hint" {
+  type    = string
+  default = "wnam"
 }

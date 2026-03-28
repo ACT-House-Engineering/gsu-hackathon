@@ -1,5 +1,5 @@
-import { TRPCError, type TRPCProcedureBuilder, initTRPC } from "@trpc/server";
-import { ZodError, flattenError } from "zod";
+import { initTRPC, TRPCError, type TRPCProcedureBuilder } from "@trpc/server";
+import { flattenError, ZodError } from "zod";
 import type { TRPCContext } from "./context.js";
 
 const t = initTRPC.context<TRPCContext>().create({
@@ -21,31 +21,31 @@ export const createCallerFactory = t.createCallerFactory;
 
 // Derive type from publicProcedure to stay in sync with initTRPC config.
 // Explicit annotation required to avoid TS2742 (non-portable inferred type).
-type ProtectedProcedure = typeof publicProcedure extends TRPCProcedureBuilder<
-  infer TContext,
-  infer TMeta,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  infer TContextOverrides,
-  infer TInputIn,
-  infer TInputOut,
-  infer TOutputIn,
-  infer TOutputOut,
-  infer TCaller
->
-  ? TRPCProcedureBuilder<
-      TContext,
-      TMeta,
-      {
-        session: NonNullable<TRPCContext["session"]>;
-        user: NonNullable<TRPCContext["user"]>;
-      },
-      TInputIn,
-      TInputOut,
-      TOutputIn,
-      TOutputOut,
-      TCaller
-    >
-  : never;
+type ProtectedProcedure =
+  typeof publicProcedure extends TRPCProcedureBuilder<
+    infer TContext,
+    infer TMeta,
+    infer _TContextOverrides,
+    infer TInputIn,
+    infer TInputOut,
+    infer TOutputIn,
+    infer TOutputOut,
+    infer TCaller
+  >
+    ? TRPCProcedureBuilder<
+        TContext,
+        TMeta,
+        {
+          session: NonNullable<TRPCContext["session"]>;
+          user: NonNullable<TRPCContext["user"]>;
+        },
+        TInputIn,
+        TInputOut,
+        TOutputIn,
+        TOutputOut,
+        TCaller
+      >
+    : never;
 
 export const protectedProcedure: ProtectedProcedure = t.procedure.use(
   ({ ctx, next }) => {

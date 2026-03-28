@@ -1,9 +1,9 @@
 import type { AppRouter } from "@repo/api";
 import {
-  type TRPCLink,
   createTRPCClient,
   httpBatchLink,
   loggerLink,
+  type TRPCLink,
 } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { queryClient } from "./query";

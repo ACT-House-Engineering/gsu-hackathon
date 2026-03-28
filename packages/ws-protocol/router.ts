@@ -25,7 +25,7 @@
  * ```
  */
 
-import { type Router, createRouter, withZod } from "@ws-kit/zod";
+import { createRouter, type Router, withZod } from "@ws-kit/zod";
 import { Echo, GetUser, Ping, Pong } from "./messages";
 
 /**

@@ -1,6 +1,3 @@
-import { auth } from "@/lib/auth";
-import { useBillingQuery } from "@/lib/queries/billing";
-import { useSessionQuery } from "@/lib/queries/session";
 import {
   Button,
   Card,
@@ -15,6 +12,9 @@ import {
 } from "@repo/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { Bell, CreditCard, Palette, Shield, User } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { useBillingQuery } from "@/lib/queries/billing";
+import { useSessionQuery } from "@/lib/queries/session";
 
 export const Route = createFileRoute("/(app)/settings")({
   component: Settings,

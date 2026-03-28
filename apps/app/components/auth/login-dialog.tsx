@@ -1,5 +1,3 @@
-import { getSafeRedirectUrl } from "@/lib/auth-config";
-import { revalidateSession } from "@/lib/queries/session";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +8,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
+import { getSafeRedirectUrl } from "@/lib/auth-config";
+import { revalidateSession } from "@/lib/queries/session";
 import { AuthForm } from "./auth-form";
 
 interface LoginDialogProps {

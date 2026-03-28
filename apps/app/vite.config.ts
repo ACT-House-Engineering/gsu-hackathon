@@ -1,17 +1,12 @@
 import { TLSSocket } from "node:tls";
-import { URL, fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react-swc";
 import { loadEnv } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineProject } from "vitest/config";
 
-const publicEnvVars = [
-  "APP_NAME",
-  "APP_ORIGIN",
-  "GOOGLE_CLOUD_PROJECT",
-  "GA_MEASUREMENT_ID",
-];
+const publicEnvVars = ["APP_NAME", "APP_ORIGIN"];
 
 /**
  * Vite configuration.
