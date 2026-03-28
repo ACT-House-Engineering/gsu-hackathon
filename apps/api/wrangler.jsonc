@@ -1,0 +1,125 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+
+  // [METADATA]
+  // API worker accessed via service binding from web worker (no routes needed).
+  "name": "gsu-hackathon-api",
+  "main": "./worker.ts",
+  "compatibility_date": "2025-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "upload_source_maps": true,
+
+  // [ENV:PRODUCTION]
+  // Command: bun wrangler deploy
+  "vars": {
+    "ENVIRONMENT": "production",
+    "APP_NAME": "GSU Hackathon",
+    "APP_ORIGIN": "https://example.com",
+    "ALLOWED_ORIGINS": "https://example.com",
+    "EMAIL_FROM": "noreply@updates.example.com",
+    "EMAIL_REPLY_TO": "support@example.com"
+  },
+  "d1_databases": [
+    {
+      "binding": "APP_DB",
+      "database_name": "gsu-hackathon",
+      "database_id": "your-production-d1-database-id-here",
+      "migrations_dir": "../../db/migrations"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "MAILER",
+      "allowed_sender_addresses": ["noreply@updates.example.com"]
+    }
+  ],
+  "kv_namespaces": [],
+
+  "env": {
+    // [ENV:DEVELOPMENT]
+    // Command: bun wrangler dev
+    "dev": {
+      "vars": {
+        "ENVIRONMENT": "development",
+        "APP_NAME": "GSU Hackathon",
+        "APP_ORIGIN": "http://localhost:5173",
+        "ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173",
+        "EMAIL_FROM": "noreply@updates.example.com",
+        "EMAIL_REPLY_TO": "support@example.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "APP_DB",
+          "database_name": "gsu-hackathon-dev",
+          "database_id": "your-dev-d1-database-id-here",
+          "preview_database_id": "your-dev-d1-database-id-here",
+          "migrations_dir": "../../db/migrations"
+        }
+      ],
+      "send_email": [
+        {
+          "name": "MAILER",
+          "allowed_sender_addresses": ["noreply@updates.example.com"]
+        }
+      ],
+      "kv_namespaces": []
+    },
+
+    // [ENV:STAGING]
+    // Command: bun wrangler deploy --env staging
+    "staging": {
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "APP_NAME": "GSU Hackathon",
+        "APP_ORIGIN": "https://staging.example.com",
+        "ALLOWED_ORIGINS": "https://staging.example.com",
+        "EMAIL_FROM": "noreply@updates.example.com",
+        "EMAIL_REPLY_TO": "support@example.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "APP_DB",
+          "database_name": "gsu-hackathon-staging",
+          "database_id": "your-staging-d1-database-id-here",
+          "migrations_dir": "../../db/migrations"
+        }
+      ],
+      "send_email": [
+        {
+          "name": "MAILER",
+          "allowed_sender_addresses": ["noreply@updates.example.com"]
+        }
+      ],
+      "kv_namespaces": []
+    },
+
+    // [ENV:PREVIEW]
+    // Command: bun wrangler deploy --env preview
+    "preview": {
+      "vars": {
+        "ENVIRONMENT": "preview",
+        "APP_NAME": "GSU Hackathon",
+        "APP_ORIGIN": "https://preview.example.com",
+        "ALLOWED_ORIGINS": "https://preview.example.com",
+        "EMAIL_FROM": "noreply@updates.example.com",
+        "EMAIL_REPLY_TO": "support@example.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "APP_DB",
+          "database_name": "gsu-hackathon-preview",
+          "database_id": "your-preview-d1-database-id-here",
+          "migrations_dir": "../../db/migrations"
+        }
+      ],
+      "send_email": [
+        {
+          "name": "MAILER",
+          "allowed_sender_addresses": ["noreply@updates.example.com"]
+        }
+      ],
+      "kv_namespaces": []
+    }
+  }
+}
