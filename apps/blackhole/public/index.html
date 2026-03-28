@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gargantua — Interstellar Black Hole</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    #canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+    #cow {
+      position: absolute;
+      font-size: 36px;
+      pointer-events: none;
+      transform-origin: center center;
+      will-change: transform;
+      z-index: 10;
+      filter: drop-shadow(0 0 8px rgba(0,255,128,0.9));
+    }
+    #moo {
+      position: absolute;
+      color: #00ff88;
+      font-size: 13px;
+      font-weight: bold;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 11;
+      text-shadow: 0 0 10px #00ff88;
+      opacity: 0;
+    }
+    #hud {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 20;
+      font-family: 'Courier New', monospace;
+    }
+    #info {
+      position: absolute; bottom: 20px;
+      left: 50%; transform: translateX(-50%);
+      color: rgba(0,255,100,0.45); font-size: 11px;
+      letter-spacing: 0.12em; white-space: nowrap;
+    }
+    #mode {
+      position: absolute; top: 12px; right: 14px;
+      color: rgba(0,255,100,0.35); font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+    #title {
+      position: absolute; top: 12px; left: 14px;
+      color: rgba(0,255,100,0.5); font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="cow">🐄</div>
+  <div id="moo">MOO!</div>
+  <div id="hud">
+    <div id="title">Gargantua · M87*</div>
+    <div id="mode">INITIALIZING…</div>
+    <div id="info">drag to rotate · pinch / scroll to zoom</div>
+  </div>
+
+<script type="module">
+// ==========================================================================
+// STATE
+// ==========================================================================
+const canvas  = document.getElementById('canvas');
+const cowEl   = document.getElementById('cow');
+const mooEl   = document.getElementById('moo');
+const modeEl  = document.getElementById('mode');
+
+let W = window.innerWidth, H = window.innerHeight;
+let camYaw = 0.3, camPitch = 0.2;
+let appTime = 0, zoom = 1.0;
+let dragging = false, lastMX = 0, lastMY = 0, pinchD0 = 0;
+
+// Cow state
+let cowAngle = Math.random() * Math.PI * 2;
+let cowR     = 0.38 + Math.random() * 0.06;   // 0..1 normalised screen fraction
+let cowDead  = false, mooTimer = 0;
+
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || W < 900;
+
+window.addEventListener('resize', () => { W = window.innerWidth; H = window.innerHeight; onResize?.(); });
+
+// ==========================================================================
+// INPUT
+// ==========================================================================
+canvas.addEventListener('mousedown',  e => { dragging = true;  lastMX = e.clientX; lastMY = e.clientY; });
+window.addEventListener('mouseup',    ()  => { dragging = false; });
+window.addEventListener('mousemove',  e  => {
+  if (!dragging) return;
+  camYaw   += (e.clientX - lastMX) * 0.005;
+  camPitch += (e.clientY - lastMY) * 0.003;
+  camPitch  = Math.max(-0.82, Math.min(0.82, camPitch));
+  lastMX = e.clientX; lastMY = e.clientY;
+});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    dragging = true; lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  } else if (e.touches.length === 2) {
+    dragging = false;
+    pinchD0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                         e.touches[0].clientY - e.touches[1].clientY);
+  }
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && dragging) {
+    camYaw   += (e.touches[0].clientX - lastMX) * 0.005;
+    camPitch += (e.touches[0].clientY - lastMY) * 0.003;
+    camPitch  = Math.max(-0.82, Math.min(0.82, camPitch));
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  } else if (e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                         e.touches[0].clientY - e.touches[1].clientY);
+    zoom = Math.max(0.35, Math.min(3.5, zoom * d / pinchD0));
+    pinchD0 = d;
+  }
+}, { passive: false });
+canvas.addEventListener('touchend', () => { dragging = false; });
+canvas.addEventListener('wheel', e => {
+  zoom = Math.max(0.35, Math.min(3.5, zoom * (e.deltaY > 0 ? 1.1 : 0.9)));
+  e.preventDefault();
+}, { passive: false });
+
+// ==========================================================================
+// COW  🐄 → spirals in → spaghettified → respawns
+// ==========================================================================
+function updateCow(dt) {
+  if (cowDead) return;
+
+  const angVel = 0.45 * (1 + (1 - cowR) * 3.0);
+  cowAngle += angVel * dt;
+  cowR     -= 0.007 * dt * (1 + (1 - cowR) * 2);   // accelerate inward
+
+  const minDim = Math.min(W, H);
+  const sx = W / 2 + Math.cos(cowAngle) * cowR * minDim * 0.44;
+  const sy = H / 2 + Math.sin(cowAngle) * cowR * minDim * 0.22; // ellipse (tilted disk)
+
+  const approach  = Math.max(0, (0.22 - cowR) / 0.22);
+  const stretchY  = 1 + approach * 8;
+  const stretchX  = 1 / Math.sqrt(stretchY);
+  const opacity   = Math.min(1, (cowR - 0.03) / 0.06);
+  const scale     = 0.5 + cowR;
+
+  cowEl.style.transform = `translate(${sx - 18}px, ${sy - 18}px) scale(${stretchX * scale}, ${stretchY * scale})`;
+  cowEl.style.opacity   = Math.max(0, opacity).toString();
+
+  // Random moo
+  if (mooTimer <= 0 && cowR > 0.18 && Math.random() < 0.025 * dt) {
+    mooEl.style.left    = (sx + 28) + 'px';
+    mooEl.style.top     = (sy - 28) + 'px';
+    mooEl.style.opacity = '1';
+    mooTimer = 2.2;
+  }
+  if (mooTimer > 0) {
+    mooTimer -= dt;
+    mooEl.style.opacity = Math.max(0, mooTimer / 2.2).toString();
+  }
+
+  if (cowR <= 0.03) {
+    cowDead = true;
+    cowEl.style.opacity = '0';
+    setTimeout(() => {
+      cowR = 0.37 + Math.random() * 0.07;
+      cowAngle = Math.random() * Math.PI * 2;
+      cowDead = false;
+    }, 3800);
+  }
+}
+
+// ==========================================================================
+// SHADER SOURCES
+// ==========================================================================
+// Physics constants (normalised: rs = 1)
+//   Event horizon:   r = 1.0
+//   Photon sphere:   r = 1.5
+//   ISCO (disk in):  r = 3.0  (→ we use 2.6 for visual punch)
+//   Disk outer:      r = 8.5
+//   Camera dist:     16.0
+//
+// Algorithm (per pixel):
+//   1. Build camera ray from spherical cam orbit
+//   2. March ray numerically with adaptive step
+//   3. At each step apply Schwarzschild geodesic deflection:
+//        force = -(3/2 * rs / r³) * pos;  project perp to dir
+//   4. Detect accretion disk crossing (y-sign flip)
+//   5. Accumulate green disk colour + doppler beaming
+//   6. Terminate at horizon or escape (r > 65)
+
+const GLSL_VERT = `#version 300 es
+  in vec2 aPos;
+  void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+
+function glslFrag(maxSteps) { return `#version 300 es
+precision highp float;
+precision highp int;
+
+uniform float uTime;
+uniform float uAspect;
+uniform float uYaw;
+uniform float uPitch;
+uniform float uZoom;
+uniform vec2  uRes;
+out vec4 fragColor;
+
+const float RS    = 1.0;
+const float DIN   = 2.6;
+const float DOUT  = 8.5;
+const float CDIST = 16.0;
+const int   MXST  = ${maxSteps};
+
+float hash2(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+
+vec3 stars(vec3 d) {
+  vec3 col = vec3(0.0);
+  for (int i = 0; i < 4; i++) {
+    float sc = 80.0 + float(i)*60.0;
+    vec2 uv  = vec2(atan(d.z,d.x)*sc, asin(clamp(d.y,-1.0,1.0))*sc);
+    vec2 id  = floor(uv);
+    vec2 f   = fract(uv) - 0.5;
+    float h  = hash2(id + float(i)*37.3);
+    float h2 = hash2(id*1.7 + float(i)*13.1);
+    if (h > 0.965) {
+      float s = exp(-dot(f,f)*28.0)*h2*1.4;
+      col += s * mix(vec3(0.75,0.88,1.0), vec3(1.0,0.92,0.7), h2);
+    }
+  }
+  float lat = asin(clamp(d.y,-1.0,1.0));
+  col += vec3(0.035,0.055,0.075)*exp(-lat*lat*9.0); // galaxy band
+  return col;
+}
+
+// GREEN accretion disk
+vec4 diskColor(float r, float phi, float vy) {
+  float t    = clamp((r-DIN)/(DOUT-DIN), 0.0, 1.0);
+  float temp = 1.0 - t*0.87;
+  temp = temp*temp;
+
+  // Keplerian angular velocity ∝ r^{-3/2}
+  float ang  = phi - uTime*(0.75/pow(r,1.5));
+  float turb = sin(ang*11.0+r*2.8)*0.13
+             + sin(ang*5.5 -r*4.2)*0.09
+             + sin(ang*23.0+uTime*1.3)*0.04;
+
+  float bright = max(0.0, temp*(0.78+turb));
+  bright *= exp(-vy*vy*22.0);          // vertical falloff (disk thickness)
+
+  float ig = exp(-(r-DIN)*1.7)*1.3;   // inner-edge glow
+
+  float g_ch = bright        + ig*0.45;
+  float r_ch = bright*0.10   + ig*0.06;
+  float b_ch = bright*0.38   + ig*0.18;
+
+  float alpha = clamp(bright*2.6 + ig*0.6, 0.0, 1.0);
+  return vec4(r_ch, g_ch, b_ch, alpha);
+}
+
+vec4 trace(vec3 ro, vec3 rd) {
+  vec3 pos  = ro;
+  vec3 dir  = normalize(rd);
+  vec4 col  = vec4(0.0);
+  float pY  = pos.y;
+
+  for (int i = 0; i < MXST; i++) {
+    float r = length(pos);
+
+    if (r < RS*0.88) {
+      // Event horizon — faint green rim
+      return col + vec4(0.0, 0.018, 0.008, 1.0)*(1.0-col.a);
+    }
+    if (r > 62.0 && i > 6) {
+      return col + vec4(stars(normalize(dir)), 1.0)*(1.0-col.a);
+    }
+
+    // Adaptive step: finer near the hole
+    float dt   = clamp(0.075*(r - RS*0.9), 0.035, 0.19);
+    vec3  npos = pos + dir*dt;
+    float nY   = npos.y;
+
+    // Disk crossing (y sign flip → plane intersection)
+    if (pY*nY < 0.0) {
+      float tf  = -pY/(nY - pY);
+      vec3  hit = pos + dir*(dt*tf);
+      float hr  = length(hit.xz);
+      if (hr >= DIN && hr <= DOUT) {
+        float phi = atan(hit.z, hit.x);
+        // Relativistic beaming: disk rotates → one side blue/green-shifted
+        vec3 dv  = normalize(vec3(-hit.z, 0.0, hit.x));
+        float dp = dot(dv, normalize(dir));
+        float dop = 0.68 + 0.64*(0.5 + 0.5*dp);
+
+        vec4 dc = diskColor(hr, phi, hit.y) * dop;
+        col += dc*(1.0 - col.a);
+        if (col.a > 0.93) break;
+      }
+    }
+
+    pY  = nY;
+    pos = npos;
+
+    // Geodesic deflection: null-geodesic force perpendicular to direction
+    float r3  = r*r*r;
+    vec3 frc  = (-1.5*RS / r3) * pos;
+    frc      -= dot(frc, dir)*dir;   // project ⊥ to dir (photon constraint)
+    dir = normalize(dir + frc*dt);
+  }
+
+  return col + vec4(stars(normalize(dir)), 1.0)*(1.0-col.a);
+}
+
+void main() {
+  vec2 uv = (gl_FragCoord.xy/uRes - 0.5)*2.0;
+  uv.x *= uAspect;
+  uv   /= uZoom;
+
+  // Spherical camera orbit
+  vec3 camPos = vec3(
+    CDIST * sin(uYaw) * cos(uPitch),
+    CDIST * sin(uPitch),
+    CDIST * cos(uYaw) * cos(uPitch)
+  );
+  vec3 fwd   = normalize(-camPos);
+  vec3 right = normalize(cross(fwd, vec3(0.0, 1.0, 0.001)));
+  vec3 up    = cross(right, fwd);
+
+  vec3 rd = normalize(fwd + right*uv.x*0.65 + up*uv.y*0.65);
+
+  vec4 result = trace(camPos, rd);
+
+  // Reinhard tonemap + gamma
+  vec3 mapped = result.rgb / (result.rgb + vec3(1.0));
+  mapped = pow(mapped, vec3(1.0/2.2));
+
+  // Vignette
+  vec2 fragUV = gl_FragCoord.xy/uRes - 0.5;
+  float vig   = 1.0 - length(fragUV)*1.15;
+  mapped *= max(0.0, vig);
+
+  fragColor = vec4(mapped, 1.0);
+}
+`; }
+
+// ==========================================================================
+// WGSL (WebGPU) — same algorithm, ported
+// ==========================================================================
+const WGSL_SRC = `
+struct U {
+  time:   f32,
+  aspect: f32,
+  yaw:    f32,
+  pitch:  f32,
+  zoom:   f32,
+  resW:   f32,
+  resH:   f32,
+  _pad:   f32,
+}
+@group(0) @binding(0) var<uniform> u: U;
+
+const RS:    f32 = 1.0;
+const DIN:   f32 = 2.6;
+const DOUT:  f32 = 8.5;
+const CDIST: f32 = 16.0;
+const MXST:  i32 = 300;
+
+fn hash2(p: vec2f) -> f32 { return fract(sin(dot(p, vec2f(127.1,311.7)))*43758.5453); }
+
+fn stars(d: vec3f) -> vec3f {
+  var col = vec3f(0.0);
+  for (var i = 0; i < 4; i++) {
+    let sc = 80.0 + f32(i)*60.0;
+    let uv = vec2f(atan2(d.z,d.x)*sc, asin(clamp(d.y,-1.0,1.0))*sc);
+    let id = floor(uv);
+    let f2 = fract(uv) - 0.5;
+    let h  = hash2(id + f32(i)*37.3);
+    let h2 = hash2(id*1.7 + f32(i)*13.1);
+    if (h > 0.965) {
+      let s = exp(-dot(f2,f2)*28.0)*h2*1.4;
+      col += s * mix(vec3f(0.75,0.88,1.0), vec3f(1.0,0.92,0.7), h2);
+    }
+  }
+  let lat = asin(clamp(d.y,-1.0,1.0));
+  col += vec3f(0.035,0.055,0.075)*exp(-lat*lat*9.0);
+  return col;
+}
+
+fn diskColor(r: f32, phi: f32, vy: f32) -> vec4f {
+  let t    = clamp((r-DIN)/(DOUT-DIN), 0.0, 1.0);
+  var temp = 1.0 - t*0.87;
+  temp = temp*temp;
+  let ang  = phi - u.time*(0.75/pow(r,1.5));
+  let turb = sin(ang*11.0+r*2.8)*0.13 + sin(ang*5.5-r*4.2)*0.09 + sin(ang*23.0+u.time*1.3)*0.04;
+  var bright = max(0.0, temp*(0.78+turb));
+  bright *= exp(-vy*vy*22.0);
+  let ig   = exp(-(r-DIN)*1.7)*1.3;
+  let g_ch = bright + ig*0.45;
+  let r_ch = bright*0.10 + ig*0.06;
+  let b_ch = bright*0.38 + ig*0.18;
+  return vec4f(r_ch, g_ch, b_ch, clamp(bright*2.6+ig*0.6, 0.0, 1.0));
+}
+
+fn trace(ro: vec3f, rd: vec3f) -> vec4f {
+  var pos = ro;
+  var dir = normalize(rd);
+  var col = vec4f(0.0);
+  var pY  = pos.y;
+
+  for (var i = 0; i < MXST; i++) {
+    let r = length(pos);
+    if (r < RS*0.88) { return col + vec4f(0.0,0.018,0.008,1.0)*(1.0-col.a); }
+    if (r > 62.0 && i > 6) { return col + vec4f(stars(normalize(dir)),1.0)*(1.0-col.a); }
+
+    let dt   = clamp(0.075*(r-RS*0.9), 0.035, 0.19);
+    let npos = pos + dir*dt;
+    let nY   = npos.y;
+
+    if (pY*nY < 0.0) {
+      let tf  = -pY/(nY-pY);
+      let hit = pos + dir*(dt*tf);
+      let hr  = length(hit.xz);
+      if (hr >= DIN && hr <= DOUT) {
+        let phi = atan2(hit.z, hit.x);
+        let dv  = normalize(vec3f(-hit.z, 0.0, hit.x));
+        let dp  = dot(dv, normalize(dir));
+        let dop = 0.68 + 0.64*(0.5 + 0.5*dp);
+        let dc  = diskColor(hr, phi, hit.y)*dop;
+        col += dc*(1.0-col.a);
+        if (col.a > 0.93) { break; }
+      }
+    }
+
+    pY  = nY;
+    pos = npos;
+
+    let r3  = r*r*r;
+    var frc = (-1.5*RS/r3)*pos;
+    frc    -= dot(frc,dir)*dir;
+    dir = normalize(dir + frc*dt);
+  }
+  return col + vec4f(stars(normalize(dir)),1.0)*(1.0-col.a);
+}
+
+@vertex
+fn vs(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4f {
+  var pos = array<vec2f,4>(
+    vec2f(-1.0,-1.0), vec2f(1.0,-1.0), vec2f(-1.0,1.0), vec2f(1.0,1.0)
+  );
+  return vec4f(pos[vi], 0.0, 1.0);
+}
+
+@fragment
+fn fs(@builtin(position) pos: vec4f) -> @location(0) vec4f {
+  var uv = (pos.xy / vec2f(u.resW, u.resH) - 0.5)*2.0;
+  uv.x *= u.aspect;
+  uv   /= u.zoom;
+
+  let camPos = vec3f(
+    CDIST*sin(u.yaw)*cos(u.pitch),
+    CDIST*sin(u.pitch),
+    CDIST*cos(u.yaw)*cos(u.pitch)
+  );
+  let fwd   = normalize(-camPos);
+  let right = normalize(cross(fwd, vec3f(0.0,1.0,0.001)));
+  let up2   = cross(right, fwd);
+  let rd    = normalize(fwd + right*uv.x*0.65 + up2*uv.y*0.65);
+
+  var result = trace(camPos, rd);
+  var mapped = result.rgb/(result.rgb+vec3f(1.0));
+  mapped = pow(mapped, vec3f(1.0/2.2));
+
+  let fragUV = pos.xy/vec2f(u.resW,u.resH) - 0.5;
+  let vig    = 1.0 - length(fragUV)*1.15;
+  mapped    *= max(0.0, vig);
+  return vec4f(mapped, 1.0);
+}
+`;
+
+// ==========================================================================
+// WEBGPU RENDERER
+// ==========================================================================
+async function initWebGPU() {
+  if (!navigator.gpu) throw new Error('No WebGPU');
+  const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+  if (!adapter) throw new Error('No adapter');
+  const device  = await adapter.requestDevice();
+  const ctx     = canvas.getContext('webgpu');
+  const fmt     = navigator.gpu.getPreferredCanvasFormat();
+
+  const mod = device.createShaderModule({ code: WGSL_SRC });
+
+  const ubuf = device.createBuffer({ size: 32, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+
+  const bgl = device.createBindGroupLayout({
+    entries: [{ binding: 0, visibility: GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } }]
+  });
+  const pipeline = await device.createRenderPipelineAsync({
+    layout:    device.createPipelineLayout({ bindGroupLayouts: [bgl] }),
+    vertex:    { module: mod, entryPoint: 'vs' },
+    fragment:  { module: mod, entryPoint: 'fs', targets: [{ format: fmt }] },
+    primitive: { topology: 'triangle-strip' },
+  });
+  const bg = device.createBindGroup({
+    layout: bgl,
+    entries: [{ binding: 0, resource: { buffer: ubuf } }]
+  });
+
+  function configCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 1.5);
+    canvas.width  = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.configure({ device, format: fmt, alphaMode: 'opaque' });
+  }
+  configCanvas();
+
+  function draw() {
+    const cw = canvas.width, ch = canvas.height;
+    device.queue.writeBuffer(ubuf, 0,
+      new Float32Array([appTime, cw/ch, camYaw, camPitch, zoom, cw, ch, 0]));
+    const enc  = device.createCommandEncoder();
+    const pass = enc.beginRenderPass({
+      colorAttachments: [{
+        view: ctx.getCurrentTexture().createView(),
+        loadOp: 'clear', storeOp: 'store',
+        clearValue: { r:0, g:0, b:0, a:1 }
+      }]
+    });
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bg);
+    pass.draw(4);
+    pass.end();
+    device.queue.submit([enc.finish()]);
+  }
+
+  return { draw, resize: configCanvas };
+}
+
+// ==========================================================================
+// WEBGL2 RENDERER
+// ==========================================================================
+function initWebGL2() {
+  const gl = canvas.getContext('webgl2');
+  if (!gl) throw new Error('No WebGL2');
+
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+      throw new Error('Shader compile: ' + gl.getShaderInfoLog(s));
+    return s;
+  }
+  function mkProg(vs, fs) {
+    const p = gl.createProgram();
+    gl.attachShader(p, vs); gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+      throw new Error('Link: ' + gl.getProgramInfoLog(p));
+    return p;
+  }
+
+  const steps = isMobile ? 180 : 260;
+  const prog  = mkProg(
+    mkShader(gl.VERTEX_SHADER,   GLSL_VERT),
+    mkShader(gl.FRAGMENT_SHADER, glslFrag(steps))
+  );
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+  gl.useProgram(prog);
+  const aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const U = {
+    time:   gl.getUniformLocation(prog, 'uTime'),
+    aspect: gl.getUniformLocation(prog, 'uAspect'),
+    yaw:    gl.getUniformLocation(prog, 'uYaw'),
+    pitch:  gl.getUniformLocation(prog, 'uPitch'),
+    zoom:   gl.getUniformLocation(prog, 'uZoom'),
+    res:    gl.getUniformLocation(prog, 'uRes'),
+  };
+
+  function configCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 1.5);
+    canvas.width  = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+  }
+  configCanvas();
+
+  function draw() {
+    const cw = canvas.width, ch = canvas.height;
+    if (canvas.width !== cw || canvas.height !== ch) configCanvas();
+    gl.viewport(0, 0, cw, ch);
+    gl.uniform1f(U.time,   appTime);
+    gl.uniform1f(U.aspect, cw / ch);
+    gl.uniform1f(U.yaw,    camYaw);
+    gl.uniform1f(U.pitch,  camPitch);
+    gl.uniform1f(U.zoom,   zoom);
+    gl.uniform2f(U.res,    cw, ch);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  return { draw, resize: configCanvas };
+}
+
+// ==========================================================================
+// CANVAS 2D SOFTWARE FALLBACK  (180×120 → scaled up)
+// ==========================================================================
+function initCanvas2D() {
+  const ctx  = canvas.getContext('2d');
+  const SW = 180, SH = 120;
+  const off  = new OffscreenCanvas(SW, SH);
+  const octx = off.getContext('2d');
+  const img  = octx.createImageData(SW, SH);
+  const pix  = img.data;
+
+  const RS=1, DIN=2.6, DOUT=8.5, CDIST=16, MXST=60;
+
+  const hsh = (x,y) => { const v=(Math.sin(x*127.1+y*311.7)*43758.5453)%1; return v<0?v+1:v; };
+
+  function starsJS(dx,dy,dz) {
+    let r=0,g=0,b=0;
+    for(let i=0;i<3;i++){
+      const sc=70+i*55;
+      const phi=Math.atan2(dz,dx), th=Math.asin(Math.max(-1,Math.min(1,dy)));
+      const ux=Math.floor(phi*sc), uy=Math.floor(th*sc);
+      const h=hsh(ux+i*37,uy+i*37), h2=hsh(ux*1.7+i*13,uy*1.7+i*13);
+      if(h>0.965){const s=h2*1.3; r+=s*0.85;g+=s*0.92;b+=s;}
+    }
+    return [Math.min(1,r),Math.min(1,g),Math.min(1,b)];
+  }
+
+  function diskColorJS(r,phi,vy,t){
+    const nm=Math.max(0,Math.min(1,(r-DIN)/(DOUT-DIN)));
+    let tp=1-nm*0.87; tp*=tp;
+    const ang=phi-t*(0.75/r ** 1.5);
+    const turb=Math.sin(ang*11+r*2.8)*0.13+Math.sin(ang*5.5-r*4.2)*0.09;
+    const br=Math.max(0,tp*(0.78+turb))*Math.exp(-vy*vy*22);
+    const ig=Math.exp(-(r-DIN)*1.7)*1.3;
+    return [br*0.1+ig*0.06, br+ig*0.45, br*0.38+ig*0.18,
+            Math.min(1,br*2.6+ig*0.6)];
+  }
+
+  const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const add3=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+  const sc3 =(v,s)=>[v[0]*s,v[1]*s,v[2]*s];
+  const len3 =v=>Math.sqrt(v[0]**2+v[1]**2+v[2]**2);
+  const nm3  =v=>{const l=len3(v);return[v[0]/l,v[1]/l,v[2]/l];};
+  const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+
+  function render() {
+    for(let py=0;py<SH;py++) for(let px=0;px<SW;px++){
+      const uvx=(px/SW-0.5)*2*(SW/SH)/zoom;
+      const uvy=-(py/SH-0.5)*2/zoom;
+
+      const cp=[CDIST*Math.sin(camYaw)*Math.cos(camPitch),
+                CDIST*Math.sin(camPitch),
+                CDIST*Math.cos(camYaw)*Math.cos(camPitch)];
+      const fwd=nm3([-cp[0],-cp[1],-cp[2]]);
+      const rgt=nm3(cross3(fwd,[0,1,0.001]));
+      const up=cross3(rgt,fwd);
+
+      let dir=nm3(add3(add3(sc3(fwd,1),sc3(rgt,uvx*0.65)),sc3(up,uvy*0.65)));
+      let pos=[...cp];
+      let ra=0,ga=0,ba=0,aa=0,pY=pos[1];
+
+      for(let s=0;s<MXST;s++){
+        const r=len3(pos);
+        if(r<RS*0.88){ra=0;ga=4;ba=2;aa=255;break;}
+        if(r>62&&s>5){
+          const bg=starsJS(dir[0],dir[1],dir[2]);
+          const ia=1-aa/255;
+          ra+=bg[0]*255*ia;ga+=bg[1]*255*ia;ba+=bg[2]*255*ia;aa=255;break;
+        }
+        const dt=Math.max(0.04,Math.min(0.19,0.075*(r-RS*0.9)));
+        const np=[pos[0]+dir[0]*dt,pos[1]+dir[1]*dt,pos[2]+dir[2]*dt];
+        const nY=np[1];
+        if(pY*nY<0){
+          const tf=-pY/(nY-pY);
+          const hit=[pos[0]+dir[0]*dt*tf,pos[1]+dir[1]*dt*tf,pos[2]+dir[2]*dt*tf];
+          const hr=Math.sqrt(hit[0]**2+hit[2]**2);
+          if(hr>=DIN&&hr<=DOUT){
+            const phi=Math.atan2(hit[2],hit[0]);
+            const dv=nm3([-hit[2],0,hit[0]]);
+            const dp=dot3(dv,dir);
+            const dop=0.68+0.64*(0.5+0.5*dp);
+            const dc=diskColorJS(hr,phi,hit[1],appTime);
+            const ia=1-aa/255;
+            ra+=dc[0]*255*dop*ia;ga+=dc[1]*255*dop*ia;ba+=dc[2]*255*dop*ia;
+            aa=Math.min(255,aa+dc[3]*255*dop*ia);
+            if(aa>237)break;
+          }
+        }
+        pY=nY;pos=np;
+        const r3=r*r*r;
+        const fx=-1.5*RS/r3*pos[0],fy=-1.5*RS/r3*pos[1],fz=-1.5*RS/r3*pos[2];
+        const dp=dot3([fx,fy,fz],dir);
+        dir=nm3([dir[0]+(fx-dp*dir[0])*dt,dir[1]+(fy-dp*dir[1])*dt,dir[2]+(fz-dp*dir[2])*dt]);
+      }
+
+      const vig=Math.max(0,1-Math.sqrt((px/SW-0.5)**2+(py/SH-0.5)**2)*1.15);
+      const tone=v=>255*Math.min(1,(v/255)/((v/255)+1)) ** (1/2.2);
+      const i=(py*SW+px)*4;
+      pix[i]=tone(ra)*vig; pix[i+1]=tone(ga)*vig; pix[i+2]=tone(ba)*vig; pix[i+3]=255;
+    }
+    octx.putImageData(img,0,0);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(off,0,0,canvas.width,canvas.height);
+  }
+
+  function configCanvas() {
+    canvas.width=W; canvas.height=H;
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  }
+  configCanvas();
+
+  return { draw: render, resize: configCanvas };
+}
+
+// ==========================================================================
+// MAIN LOOP
+// ==========================================================================
+let renderer = null, onResize = null, prevT = 0;
+
+function loop(now) {
+  const dt = Math.min(0.05, (now - prevT) / 1000);
+  prevT = now;
+  appTime += dt;
+  updateCow(dt);
+  renderer?.draw();
+  requestAnimationFrame(loop);
+}
+
+async function init() {
+  try {
+    renderer = await initWebGPU();
+    modeEl.textContent = 'WebGPU ✦';
+  } catch (_) {
+    try {
+      renderer = initWebGL2();
+      modeEl.textContent = 'WebGL2 ✦';
+    } catch (__) {
+      renderer = initCanvas2D();
+      modeEl.textContent = 'Canvas2D (SW)';
+    }
+  }
+  onResize = () => renderer?.resize?.();
+  requestAnimationFrame(t => { prevT = t; requestAnimationFrame(loop); });
+}
+
+init();
+</script>
+</body>
+</html>
