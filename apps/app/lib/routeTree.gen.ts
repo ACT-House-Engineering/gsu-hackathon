@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as appRouteRouteImport } from './../routes/(app)/route'
-import { Route as appIndexRouteImport } from './../routes/(app)/index'
+import { Route as IndexRouteImport } from './../routes/index'
 import { Route as authSignupRouteImport } from './../routes/(auth)/signup'
 import { Route as authLoginRouteImport } from './../routes/(auth)/login'
 import { Route as appUsersRouteImport } from './../routes/(app)/users'
@@ -24,10 +24,10 @@ const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appIndexRoute = appIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => appRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const authSignupRoute = authSignupRouteImport.update({
   id: '/(auth)/signup',
@@ -71,6 +71,7 @@ const appAboutRoute = appAboutRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/about': typeof appAboutRoute
   '/analytics': typeof appAnalyticsRoute
   '/dashboard': typeof appDashboardRoute
@@ -79,9 +80,9 @@ export interface FileRoutesByFullPath {
   '/users': typeof appUsersRoute
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
-  '/': typeof appIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/about': typeof appAboutRoute
   '/analytics': typeof appAnalyticsRoute
   '/dashboard': typeof appDashboardRoute
@@ -90,10 +91,10 @@ export interface FileRoutesByTo {
   '/users': typeof appUsersRoute
   '/login': typeof authLoginRoute
   '/signup': typeof authSignupRoute
-  '/': typeof appIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/about': typeof appAboutRoute
   '/(app)/analytics': typeof appAnalyticsRoute
@@ -103,11 +104,11 @@ export interface FileRoutesById {
   '/(app)/users': typeof appUsersRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/signup': typeof authSignupRoute
-  '/(app)/': typeof appIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/about'
     | '/analytics'
     | '/dashboard'
@@ -116,9 +117,9 @@ export interface FileRouteTypes {
     | '/users'
     | '/login'
     | '/signup'
-    | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/about'
     | '/analytics'
     | '/dashboard'
@@ -127,9 +128,9 @@ export interface FileRouteTypes {
     | '/users'
     | '/login'
     | '/signup'
-    | '/'
   id:
     | '__root__'
+    | '/'
     | '/(app)'
     | '/(app)/about'
     | '/(app)/analytics'
@@ -139,10 +140,10 @@ export interface FileRouteTypes {
     | '/(app)/users'
     | '/(auth)/login'
     | '/(auth)/signup'
-    | '/(app)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
   authSignupRoute: typeof authSignupRoute
@@ -157,12 +158,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/': {
-      id: '/(app)/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof appIndexRouteImport
-      parentRoute: typeof appRouteRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(auth)/signup': {
       id: '/(auth)/signup'
@@ -230,7 +231,6 @@ interface appRouteRouteChildren {
   appReportsRoute: typeof appReportsRoute
   appSettingsRoute: typeof appSettingsRoute
   appUsersRoute: typeof appUsersRoute
-  appIndexRoute: typeof appIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
@@ -240,7 +240,6 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appReportsRoute: appReportsRoute,
   appSettingsRoute: appSettingsRoute,
   appUsersRoute: appUsersRoute,
-  appIndexRoute: appIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
@@ -248,6 +247,7 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
   authSignupRoute: authSignupRoute,
