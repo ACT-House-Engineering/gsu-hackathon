@@ -51,3 +51,11 @@ bun ui:add <component>         # Add shadcn/ui component to packages/ui
 - Prefer explicit, readable code over clever or compressed patterns.
 - Use precise TypeScript types. Avoid `any` and unnecessary type assertions — let the compiler enforce correctness.
 - Document non-obvious trade-offs and decisions. Explain why, not what — every word must add value.
+
+## Git Workflow
+
+- After completing requested work, automatically use the `conventional-green-commits` skill before wrapping up.
+- Create atomic Conventional Commits that include only the files relevant to the task. Do not sweep unrelated local changes into the same commit.
+- Run the smallest relevant checks for the touched code before each commit. If the task is docs-only and there is no meaningful check to run, say that explicitly.
+- Push the working branch after committing. If you are on `main`, create a task branch with the default `codex/` prefix before pushing unless the user asked for a different branch.
+- If the user explicitly says not to commit or not to push, follow the user instead. If commit or push fails, report the exact blocker.
