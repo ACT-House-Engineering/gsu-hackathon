@@ -1,207 +1,134 @@
-<div align="center">
+# GSU Build Day Techie Workshop
 
-# React Starter Kit
+This repository contains the source code and companion materials for the GSU
+Build Day Techie Workshop, built around the public
+`Techie Workshop: Agentic Engineering` materials from ACT House and the
+`Build Day X Innovation Bootcamp: Georgia State University` event hub.
 
-<a href="https://reactstarter.com/getting-started/"><img src="https://img.shields.io/badge/Docs-007ec6" height="20"></a>
-<a href="https://github.com/kriasoft/react-starter-kit?sponsor=1"><img src="https://img.shields.io/badge/-GitHub-%23555.svg?logo=github-sponsors" height="20"></a>
-<a href="https://discord.gg/2nKEnKq"><img src="https://img.shields.io/discord/643523529131950086?label=Chat" height="20"></a>
-<a href="https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant"><img src="https://img.shields.io/badge/Ask_ChatGPT-10a37f?logo=openai&logoColor=white" height="20"></a>
-<a href="https://gemini.google.com/gem/1IXFElQ2UvvZY86iL6uZLeoC-r8mp-OB-?usp=sharing"><img src="https://img.shields.io/badge/Ask_Gemini-8E75B2?logo=googlegemini&logoColor=white" height="20"></a>
-<a href="https://github.com/kriasoft/react-starter-kit/stargazers"><img src="https://img.shields.io/github/stars/kriasoft/react-starter-kit.svg?style=social&label=Star&maxAge=3600" height="20"></a>
-<a href="https://x.com/ReactStarter"><img src="https://img.shields.io/twitter/follow/ReactStarter.svg?style=social&label=Follow&maxAge=3600" height="20"></a>
+The public event promo describes Build Day X as a 24-hour innovation
+environment where students turn ideas into working prototypes with access to
+mentorship, workshops, and cross-disciplinary collaboration. The ENIGSU
+announcement also highlights a prize pool of up to `$2,500` and lists FanDuel
+as a sponsor.
 
-</div>
+## Public Links
 
-A full-stack monorepo template for building SaaS applications with React 19, tRPC, and Cloudflare Workers. Type-safe from database to UI, deployable to the edge in minutes.
+- Workshop materials:
+  [link.act.house/bdx](https://link.act.house/bdx)
+- Workshop source page:
+  [Techie Workshop: Agentic Engineering](https://acthouse.notion.site/agentic-gsu?source=copy_link)
+- Event hub:
+  [Build Day X Innovation Bootcamp: Georgia State University](https://acthouse.notion.site/Build-Day-X-Innovation-Bootcamp-Georgia-State-University-3254a99790e080bd8281f7b14619a8eb)
+- ENIGSU announcement:
+  [Instagram post](https://www.instagram.com/p/DVcWCH9FGyn/)
+- Georgia State entrepreneurship ecosystem:
+  [ENI at GSU](https://eni.gsu.edu/)
+- Student startup program at GSU:
+  [LaunchGSU](https://eni.gsu.edu/launchgsu/)
 
-## Highlights
+## Workshop Focus
 
-- **Type-safe full stack** — TypeScript, tRPC, and Drizzle ORM create a single type contract from database to UI
-- **Edge-native** — Three Cloudflare Workers (web, app, api) connected via service bindings
-- **Auth + billing included** — Better Auth with email OTP, passkey, Google OAuth, organizations, and Stripe subscriptions
-- **Modern React** — React 19, TanStack Router (file-based), TanStack Query, Jotai, Tailwind CSS v4, shadcn/ui
-- **Database ready** — Drizzle ORM with Neon PostgreSQL, migrations, and seed data
-- **Fast DX** — Bun runtime, Vite, Vitest, ESLint, Prettier, and pre-configured VS Code settings
+The current workshop materials center on agentic engineering and move through a
+simple hands-on progression:
 
-React Starter Kit is proudly supported by these amazing sponsors:
+1. Simple prompting
+2. Talking to a dataset
+3. Prototyping code
 
-<a href="https://reactstarter.com/s/1"><img src="https://reactstarter.com/s/1.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/s/2"><img src="https://reactstarter.com/s/2.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/s/3"><img src="https://reactstarter.com/s/3.png" height="60" /></a>
+The Notion workshop page explicitly references tools and examples including
+ChatGPT, Claude, Codex, Claude Code, Google Takeout JSON, Replit, and Gemini
+share links. This repo now uses that event/workshop framing instead of the
+generic starter-kit branding.
 
-## Technology Stack
+## Repo Stack
 
-| Layer         | Technologies                                                                                                                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Runtime**   | [Bun](https://bun.sh/), [Cloudflare Workers](https://workers.cloudflare.com/), [TypeScript](https://www.typescriptlang.org/) 5.9                                                              |
-| **Frontend**  | [React 19](https://react.dev/), [TanStack Router](https://tanstack.com/router), [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Jotai](https://jotai.org/) |
-| **Marketing** | [Astro](https://astro.build/)                                                                                                                                                                 |
-| **Backend**   | [Hono](https://hono.dev/), [tRPC](https://trpc.io/), [Better Auth](https://www.better-auth.com/), [Stripe](https://stripe.com/)                                                               |
-| **Database**  | [Drizzle ORM](https://orm.drizzle.team/), [Neon PostgreSQL](https://get.neon.com/HD157BR)                                                                                                     |
-| **Tooling**   | [Vite](https://vitejs.dev/), [Vitest](https://vitest.dev/), [ESLint](https://eslint.org/), [Prettier](https://prettier.io/)                                                                   |
-
-## Monorepo Architecture
-
-```
-├── apps/
-│   ├── web/          Astro marketing site (edge router, serves static + proxies to app/api)
-│   ├── app/          React 19 SPA (TanStack Router, Jotai, Tailwind CSS v4)
-│   ├── api/          Hono + tRPC API server (Better Auth, Cloudflare Workers)
-│   └── email/        React Email templates
-├── packages/
-│   ├── ui/           shadcn/ui components (new-york style)
-│   ├── core/         Shared types and utilities
-│   └── ws-protocol/  WebSocket protocol with type-safe messaging
-├── db/               Drizzle ORM schemas, migrations, and seed data
-├── infra/            Terraform (Cloudflare Workers, DNS, Hyperdrive)
-├── docs/             VitePress documentation
-└── scripts/          Build automation and dev tools
-```
-
-Each app deploys independently to Cloudflare Workers. The web worker routes `/api/*` to the API worker and app routes to the app worker via service bindings.
-
-## Prerequisites
-
-- [Bun](https://bun.sh/) v1.3+ (replaces Node.js and npm)
-- [VS Code](https://code.visualstudio.com/) with our [recommended extensions](.vscode/extensions.json)
-- [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) browser extension (recommended)
-- [Cloudflare account](https://dash.cloudflare.com/sign-up) for deployment
+- `apps/web`: Astro overview site and edge router
+- `apps/app`: React 19 workshop app
+- `apps/api`: Hono + tRPC + Better Auth on Cloudflare Workers
+- `apps/email`: React Email templates used by the API
+- `db`: Drizzle schema, migrations, seed/export scripts for Cloudflare D1
+- `infra`: Terraform for Cloudflare Workers, DNS, and D1
 
 ## Quick Start
 
-### 1. Create Your Project
-
-[Generate a new repository](https://github.com/kriasoft/react-starter-kit/generate) from this template, then clone it locally:
-
-```bash
-git clone https://github.com/your-username/your-project-name.git
-cd your-project-name
-```
-
-### 2. Install Dependencies
+1. Install dependencies:
 
 ```bash
 bun install
 ```
 
-### 3. Configure Environment
-
-This project follows [Vite env conventions](https://vite.dev/guide/env-and-mode#env-files):
-
-- [`.env`](./.env) is committed and contains shared defaults/placeholders only (no real secrets)
-- `.env.local` is git-ignored and should contain your real credentials
-- `.env.local` values override `.env`
+2. Copy local env overrides and update secrets:
 
 ```bash
-cp .env .env.local  # then replace placeholder values with real ones
+cp .env .env.local
 ```
 
-Also check [`wrangler.jsonc`](./apps/api/wrangler.jsonc) for Worker configuration and bindings.
+3. Fill in the Cloudflare bindings in
+   [apps/api/wrangler.jsonc](/Users/athena/Code/gsu-hackathon/apps/api/wrangler.jsonc):
 
-### 4. Start Development
+- `APP_DB.database_id`
+- `MAILER.allowed_sender_addresses`
+- environment-specific `database_id` values for `dev`, `staging`, and `preview`
+
+4. Apply the local D1 migrations and optional seed data:
 
 ```bash
-# Launch all apps in development mode (web, api, and app)
+bun db:migrate
+bun db:seed
+```
+
+5. Start the apps:
+
+```bash
 bun dev
-
-# Or, start specific apps individually
-bun web:dev  # Marketing site
-bun app:dev  # Main application
-bun api:dev  # API server
 ```
 
-### 5. Initialize Database
+Local URLs:
 
-Ensure `DATABASE_URL` is configured in your `.env.local` file, then set up the schema:
+- App: `http://localhost:5173`
+- Overview site: `http://localhost:4321`
+- API: `http://localhost:8787`
+
+## Tooling
+
+- Lint: `bun lint`
+- Format: `bun format`
+- Typecheck: `bun typecheck`
+- Tests: `bun test`
+
+## Agent Git Workflow
+
+This repo is configured for direct-to-`main` agent publishing.
+
+- Agents should work on `main`, not task branches.
+- Stage only the files for the current task.
+- Run the relevant checks.
+- Publish with:
 
 ```bash
-bun db:push              # Push schema directly (quick dev setup)
-bun db:seed              # Seed with sample data (optional)
-bun db:studio            # Open database GUI
+bun git:publish -- "docs(repo): update workshop copy"
 ```
 
-For production, use `bun db:migrate` to apply migrations instead of `db:push`.
+The repo also includes a `pre-push` guard that rejects non-`main` pushes.
 
-| App            | URL                     |
-| -------------- | ----------------------- |
-| React app      | <http://localhost:5173> |
-| Marketing site | <http://localhost:4321> |
-| API server     | <http://localhost:8787> |
+For this to work end-to-end, the authenticated Git actor must have permission
+to push directly to `main`. If GitHub branch protection requires pull requests,
+status checks, or admin bypass, those rules must explicitly allow your bot/user
+to push.
 
-## Production Deployment
+## Infrastructure Notes
 
-### 1. Environment Setup
+This repo uses Drizzle with the SQLite dialect and Cloudflare D1 bindings.
+Migrations live in
+[db/migrations](/Users/athena/Code/gsu-hackathon/db/migrations) and are
+referenced directly from
+[apps/api/wrangler.jsonc](/Users/athena/Code/gsu-hackathon/apps/api/wrangler.jsonc).
 
-Configure your production secrets in Cloudflare Workers:
+Terraform under [infra](/Users/athena/Code/gsu-hackathon/infra) provisions:
 
-```bash
-# Required secrets
-bun wrangler secret put BETTER_AUTH_SECRET
+- Worker metadata for `web`, `app`, and `api`
+- One D1 database per environment
+- Optional DNS records when `hostname` and `cloudflare_zone_id` are set
 
-# Stripe billing (optional — first 4 required to enable, annual is optional)
-bun wrangler secret put STRIPE_SECRET_KEY
-bun wrangler secret put STRIPE_WEBHOOK_SECRET
-bun wrangler secret put STRIPE_STARTER_PRICE_ID
-bun wrangler secret put STRIPE_PRO_PRICE_ID
-bun wrangler secret put STRIPE_PRO_ANNUAL_PRICE_ID  # optional
-
-# OAuth providers (as needed)
-bun wrangler secret put GOOGLE_CLIENT_ID
-bun wrangler secret put GOOGLE_CLIENT_SECRET
-
-# Email service
-bun wrangler secret put RESEND_API_KEY
-
-# AI features (optional)
-bun wrangler secret put OPENAI_API_KEY
-```
-
-Run these commands from the target app directory or pass `--config apps/<app>/wrangler.jsonc`. Non-sensitive vars like `RESEND_EMAIL_FROM` go in `wrangler.jsonc` directly.
-
-### 2. Build and Deploy
-
-```bash
-# Build packages that require compilation (order matters!)
-bun email:build    # Build email templates first
-bun web:build      # Build marketing site
-bun app:build      # Build main React app
-
-# Deploy all applications
-bun web:deploy     # Deploy marketing site
-bun api:deploy     # Deploy API server
-bun app:deploy     # Deploy main React app
-```
-
-## Backers
-
-<a href="https://reactstarter.com/b/1"><img src="https://reactstarter.com/b/1.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/2"><img src="https://reactstarter.com/b/2.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/3"><img src="https://reactstarter.com/b/3.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/4"><img src="https://reactstarter.com/b/4.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/5"><img src="https://reactstarter.com/b/5.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/6"><img src="https://reactstarter.com/b/6.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/7"><img src="https://reactstarter.com/b/7.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/b/8"><img src="https://reactstarter.com/b/8.png" height="60" /></a>
-
-## Contributors
-
-<a href="https://reactstarter.com/c/1"><img src="https://reactstarter.com/c/1.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/2"><img src="https://reactstarter.com/c/2.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/3"><img src="https://reactstarter.com/c/3.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/4"><img src="https://reactstarter.com/c/4.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/5"><img src="https://reactstarter.com/c/5.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/6"><img src="https://reactstarter.com/c/6.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/7"><img src="https://reactstarter.com/c/7.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/8"><img src="https://reactstarter.com/c/8.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/9"><img src="https://reactstarter.com/c/9.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/10"><img src="https://reactstarter.com/c/10.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/11"><img src="https://reactstarter.com/c/11.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/12"><img src="https://reactstarter.com/c/12.png" height="60" /></a>&nbsp;&nbsp;<a href="https://reactstarter.com/c/13"><img src="https://reactstarter.com/c/13.png" height="60" /></a>
-
-## Need Help?
-
-**[Documentation](https://reactstarter.com/)** covers auth, database, billing, deployment, and more.
-
-Our AI assistant is trained on this codebase — ask it anything on [ChatGPT](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant) or [Gemini](https://gemini.google.com/gem/1IXFElQ2UvvZY86iL6uZLeoC-r8mp-OB-?usp=sharing). Try these questions:
-
-- [How do I add a new tRPC endpoint?](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=How%20do%20I%20add%20a%20new%20tRPC%20endpoint%3F)
-- [Help me create a database table](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=Help%20me%20create%20a%20database%20table)
-- [How does authentication work?](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=How%20does%20authentication%20work%3F)
-- [Explain the project structure](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=Explain%20the%20project%20structure)
-- [How do I deploy to Cloudflare?](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=How%20do%20I%20deploy%20to%20Cloudflare%3F)
-- [Add a new page with routing](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=Add%20a%20new%20page%20with%20routing)
-- [How do I send emails?](https://chatgpt.com/g/g-69564f0a23088191846aa4072bd9397d-react-starter-kit-assistant?prompt=How%20do%20I%20send%20emails%3F)
-
-## Contributing
-
-See the [Contributing Guide](.github/CONTRIBUTING.md) to get started. Check [good first issues](https://github.com/kriasoft/react-starter-kit/issues?q=label:"good+first+issue") or join [Discord](https://discord.gg/2nKEnKq) for discussion.
-
-## License
-
-Copyright © 2014-present Kriasoft. This source code is licensed under the MIT license found in the
-[LICENSE](https://github.com/kriasoft/react-starter-kit/blob/main/LICENSE) file.
-
----
-
-<sup>Made with ♥ by Konstantin Tarkus ([@koistya](https://twitter.com/koistya), [blog](https://medium.com/@koistya))
-and [contributors](https://github.com/kriasoft/react-starter-kit/graphs/contributors).</sup>
+The Terraform outputs are intended to be copied into the Wrangler config files.
+This repo has not been deployed from the current workspace state.

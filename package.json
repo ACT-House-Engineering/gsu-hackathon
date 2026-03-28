@@ -59,6 +59,7 @@
     "db:export:prod": "bun --cwd db export:prod",
     "db:check": "bun --cwd db check",
     "db:typecheck": "bun --cwd db typecheck",
+    "git:publish": "bash ./scripts/agent-publish.sh",
     "infra:dev": "bun run infra:dev:edge:apply",
     "infra:dev:edge:plan": "terraform -chdir=infra/envs/dev/edge plan",
     "infra:dev:edge:apply": "terraform -chdir=infra/envs/dev/edge apply -auto-approve",

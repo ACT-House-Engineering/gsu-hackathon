@@ -6,8 +6,8 @@
 - `apps/email/` — React Email templates (built before API dev server starts)
 - `packages/ui/` — shadcn/ui components (new-york style)
 - `packages/core/` — Shared utilities
-- `db/` — Drizzle ORM schemas and migrations (Neon PostgreSQL)
-- `infra/` — Terraform (Cloudflare Workers, Hyperdrive, DNS)
+- `db/` — Drizzle ORM schemas and migrations (Cloudflare D1 / SQLite)
+- `infra/` — Terraform (Cloudflare Workers, D1, DNS)
 - `docs/` — VitePress docs; `docs/adr/` for architecture decision records
 
 ## Tech Stack
@@ -15,8 +15,8 @@
 - **Runtime:** Bun >=1.3.0, TypeScript 5.9, ESM (`"type": "module"`)
 - **Frontend:** React 19, TanStack Router, TanStack Query, Jotai, shadcn/ui (new-york), Tailwind CSS v4
 - **Backend:** Hono, tRPC 11, Better Auth (email OTP, passkey, Google OAuth, organizations)
-- **Database:** Neon PostgreSQL, Drizzle ORM (`snake_case` casing), Cloudflare Hyperdrive
-- **Email:** React Email, Resend
+- **Database:** Cloudflare D1, Drizzle ORM (`snake_case` casing), SQLite dialect
+- **Email:** React Email, Cloudflare Workers `send_email`
 - **Testing:** Vitest, Happy DOM
 - **Deployment:** Cloudflare Workers (Wrangler), Terraform
 
@@ -26,12 +26,12 @@
 bun dev                        # Start web + api + app concurrently
 bun build                      # Build email → web → api → app (in order)
 bun test                       # Vitest (watch mode; --run for single run)
-bun lint                       # ESLint with cache
+bun lint                       # Biome lint
 bun typecheck                  # tsc --build
 bun ui:add <component>         # Add shadcn/ui component to packages/ui
 
 # Per-app: bun {web,app,api}:{dev,build,test,deploy}
-# Database: bun db:{push,generate,migrate,studio,seed} (append :staging or :prod)
+# Database: bun db:{generate,migrate,seed,export} (append :staging or :prod)
 ```
 
 ## Architecture
@@ -54,8 +54,13 @@ bun ui:add <component>         # Add shadcn/ui component to packages/ui
 
 ## Git Workflow
 
+- This repo uses trunk-based development. `main` is the only long-lived branch and the default place agents should work.
 - After completing requested work, automatically use the `conventional-green-commits` skill before wrapping up.
 - Create atomic Conventional Commits that include only the files relevant to the task. Do not sweep unrelated local changes into the same commit.
 - Run the smallest relevant checks for the touched code before each commit. If the task is docs-only and there is no meaningful check to run, say that explicitly.
-- Push the working branch after committing. If you are on `main`, create a task branch with the default `codex/` prefix before pushing unless the user asked for a different branch.
+- Work directly on `main`. Do not create `codex/` branches, feature branches, or any other task branches in this repo.
+- After staging the intended changes and running the relevant checks, publish with `bun git:publish -- "<conventional-commit-message>"`.
+- Push directly to `origin main` after each requested task unless the user explicitly says not to commit or not to push.
+- If the current branch is not `main`, stop and report that state instead of creating or using another branch.
+- Prefer fast-forward updates to `main`. Do not create merge commits unless the user explicitly asks for one.
 - If the user explicitly says not to commit or not to push, follow the user instead. If commit or push fails, report the exact blocker.

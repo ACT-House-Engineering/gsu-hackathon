@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+set -e
+
+branch="$(git branch --show-current)"
+
+if [ "$branch" != "main" ]; then
+  echo "Refusing push: this repo only allows agent pushes from 'main'. Current branch: '$branch'." >&2
+  exit 1
+fi
+
+while read local_ref local_sha remote_ref remote_sha
+do
+  [ -z "$local_ref" ] && continue
+
+  if [ "$local_ref" != "refs/heads/main" ] || [ "$remote_ref" != "refs/heads/main" ]; then
+    echo "Refusing push: only main -> main pushes are allowed in this repo." >&2
+    echo "Attempted: $local_ref -> $remote_ref" >&2
+    exit 1
+  fi
+done
