@@ -3,7 +3,7 @@
 
   // [METADATA]
   // Edge router that receives all traffic and routes to api/app via service bindings.
-  "name": "example-web",
+  "name": "gsu-hackathon-web",
   "main": "./worker.ts",
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [],
@@ -24,8 +24,8 @@
   // NOTE: services is non-inheritable — must be specified per environment.
   // Use naming convention: <worker>-<env> (e.g., example-app-staging)
   "services": [
-    { "binding": "APP_SERVICE", "service": "example-app" },
-    { "binding": "API_SERVICE", "service": "example-api" }
+    { "binding": "APP_SERVICE", "service": "gsu-hackathon-app" },
+    { "binding": "API_SERVICE", "service": "gsu-hackathon-api" }
   ],
 
   // [ENV:PRODUCTION]
@@ -49,8 +49,8 @@
     // Command: bun wrangler deploy --env staging
     "staging": {
       "services": [
-        { "binding": "APP_SERVICE", "service": "example-app-staging" },
-        { "binding": "API_SERVICE", "service": "example-api-staging" }
+        { "binding": "APP_SERVICE", "service": "gsu-hackathon-app-staging" },
+        { "binding": "API_SERVICE", "service": "gsu-hackathon-api-staging" }
       ],
       "vars": {
         "ENVIRONMENT": "staging"
@@ -65,8 +65,8 @@
     // Command: bun wrangler deploy --env preview
     "preview": {
       "services": [
-        { "binding": "APP_SERVICE", "service": "example-app-preview" },
-        { "binding": "API_SERVICE", "service": "example-api-preview" }
+        { "binding": "APP_SERVICE", "service": "gsu-hackathon-app-preview" },
+        { "binding": "API_SERVICE", "service": "gsu-hackathon-api-preview" }
       ],
       "vars": {
         "ENVIRONMENT": "preview"
